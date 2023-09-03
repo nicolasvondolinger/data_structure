@@ -53,3 +53,20 @@ long long int calcularFibonacciIterativo(long long int n)
         }
     }
 }
+
+int calcSin(int n, int i){
+  if(i == 0)
+    return 1;
+  else {
+    sin(n);
+    return calcSin(n, i-1);
+  }
+}
+
+long long fatorialDuploRecursivo(int n) {
+    if (n <= 0) {
+        return 1;
+    } else {
+        return n * (fatorialDuploRecursivo(n - 2) + fatorialDuploRecursivo(n - 1));
+    }
+}

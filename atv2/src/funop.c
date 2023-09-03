@@ -83,5 +83,7 @@ int main(int argc, char* argv[]){
     printf("   Valor: %lld\n", resultOp(n, calcularFibonacciRecursivo));
     result(n, calcularFibonacciRecursivo, calcularFibonacciIterativo);
     
+    fatorialDuploRecursivo(30);
+
     return 0;
 }

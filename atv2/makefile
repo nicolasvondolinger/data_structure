@@ -9,21 +9,21 @@
 #---------------------------------------------------------------------
 
 CC = gcc
-LIBS = -lm
+LIBS = -lm -pg -g
 SRC = src
 OBJ = obj
 INC = include
 BIN = bin
 OBJS = $(OBJ)/funop.o $(OBJ)/fun.o 
 HDRS = $(INC)/fun.h
-CFLAGS = -Wall -c -I$(INC)
+CFLAGS = -Wall -I$(INC) -pg -c -g
 
 EXE = $(BIN)/funop
 
 run:  $(EXE)
-	$(EXE) 1
-	$(EXE) 10
-	$(EXE) 20
+	$(EXE) 40
+	$(EXE) 40
+	$(EXE) 40
 
 $(BIN)/funop: $(OBJS)
 	$(CC) -pg -o $(BIN)/funop $(OBJS) $(LIBS)
