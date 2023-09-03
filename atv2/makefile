@@ -21,9 +21,11 @@ CFLAGS = -Wall -I$(INC) -pg -c -g
 EXE = $(BIN)/funop
 
 run:  $(EXE)
-	$(EXE) 40
-	$(EXE) 40
-	$(EXE) 40
+	$(EXE) 7
+	$(EXE) 9
+	$(EXE) 10
+	$(EXE) 11
+	$(EXE) 20
 
 $(BIN)/funop: $(OBJS)
 	$(CC) -pg -o $(BIN)/funop $(OBJS) $(LIBS)
