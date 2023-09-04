@@ -3,14 +3,14 @@ Flat profile:
 Each sample counts as 0.01 seconds.
   %   cumulative   self              self     total           
  time   seconds   seconds    calls  ms/call  ms/call  name    
- 64.00      0.32     0.32        1   320.00   320.00  calcSin
- 36.00      0.50     0.18                             _init
-  0.00      0.50     0.00        6     0.00     0.00  resultOp
-  0.00      0.50     0.00        2     0.00     0.00  calcularFatorialRecursivo
-  0.00      0.50     0.00        2     0.00     0.00  calcularFibonacciRecursivo
-  0.00      0.50     0.00        2     0.00     0.00  result
-  0.00      0.50     0.00        1     0.00     0.00  calcularFatorialIterativo
-  0.00      0.50     0.00        1     0.00     0.00  calcularFibonacciIterativo
+ 66.67      0.04     0.04                             _init
+ 33.33      0.06     0.02        2    10.00    10.00  calcSin
+  0.00      0.06     0.00        6     0.00     0.00  resultOp
+  0.00      0.06     0.00        2     0.00     0.00  calcularFatorialRecursivo
+  0.00      0.06     0.00        2     0.00     0.00  calcularFibonacciRecursivo
+  0.00      0.06     0.00        2     0.00    10.00  result
+  0.00      0.06     0.00        1     0.00     0.00  calcularFatorialIterativo
+  0.00      0.06     0.00        1     0.00     0.00  calcularFibonacciIterativo
 
  %         the percentage of the total running time of the
 time       program used by this function.
@@ -48,49 +48,47 @@ notice and this notice are preserved.
 		     Call graph (explanation follows)
 
 
-granularity: each sample hit covers 4 byte(s) for 2.00% of 0.50 seconds
+granularity: each sample hit covers 4 byte(s) for 16.67% of 0.06 seconds
 
 index % time    self  children    called     name
-                                1000             calcSin [1]
-                0.32    0.00       1/1           main [2]
-[1]     64.0    0.32    0.00       1+1000    calcSin [1]
-                                1000             calcSin [1]
+                                                 <spontaneous>
+[1]     66.7    0.04    0.00                 _init [1]
+-----------------------------------------------
+                0.02    0.00       2/2           result [3]
+[2]     33.3    0.02    0.00       2         calcSin [2]
+-----------------------------------------------
+                0.00    0.02       2/2           main [4]
+[3]     33.3    0.00    0.02       2         result [3]
+                0.02    0.00       2/2           calcSin [2]
+                0.00    0.00       4/6           resultOp [5]
 -----------------------------------------------
                                                  <spontaneous>
-[2]     64.0    0.00    0.32                 main [2]
-                0.32    0.00       1/1           calcSin [1]
-                0.00    0.00       2/6           resultOp [4]
-                0.00    0.00       2/2           result [7]
+[4]     33.3    0.00    0.02                 main [4]
+                0.00    0.02       2/2           result [3]
+                0.00    0.00       2/6           resultOp [5]
 -----------------------------------------------
-                                                 <spontaneous>
-[3]     36.0    0.18    0.00                 _init [3]
------------------------------------------------
-                0.00    0.00       2/6           main [2]
-                0.00    0.00       4/6           result [7]
-[4]      0.0    0.00    0.00       6         resultOp [4]
-                0.00    0.00       2/2           calcularFibonacciRecursivo [6]
-                0.00    0.00       2/2           calcularFatorialRecursivo [5]
+                0.00    0.00       2/6           main [4]
+                0.00    0.00       4/6           result [3]
+[5]      0.0    0.00    0.00       6         resultOp [5]
+                0.00    0.00       2/2           calcularFibonacciRecursivo [7]
+                0.00    0.00       2/2           calcularFatorialRecursivo [6]
                 0.00    0.00       1/1           calcularFibonacciIterativo [9]
                 0.00    0.00       1/1           calcularFatorialIterativo [8]
 -----------------------------------------------
-                                  38             calcularFatorialRecursivo [5]
-                0.00    0.00       2/2           resultOp [4]
-[5]      0.0    0.00    0.00       2+38      calcularFatorialRecursivo [5]
-                                  38             calcularFatorialRecursivo [5]
+                                  38             calcularFatorialRecursivo [6]
+                0.00    0.00       2/2           resultOp [5]
+[6]      0.0    0.00    0.00       2+38      calcularFatorialRecursivo [6]
+                                  38             calcularFatorialRecursivo [6]
 -----------------------------------------------
-                               27056             calcularFibonacciRecursivo [6]
-                0.00    0.00       2/2           resultOp [4]
-[6]      0.0    0.00    0.00       2+27056   calcularFibonacciRecursivo [6]
-                               27056             calcularFibonacciRecursivo [6]
+                               27056             calcularFibonacciRecursivo [7]
+                0.00    0.00       2/2           resultOp [5]
+[7]      0.0    0.00    0.00       2+27056   calcularFibonacciRecursivo [7]
+                               27056             calcularFibonacciRecursivo [7]
 -----------------------------------------------
-                0.00    0.00       2/2           main [2]
-[7]      0.0    0.00    0.00       2         result [7]
-                0.00    0.00       4/6           resultOp [4]
------------------------------------------------
-                0.00    0.00       1/1           resultOp [4]
+                0.00    0.00       1/1           resultOp [5]
 [8]      0.0    0.00    0.00       1         calcularFatorialIterativo [8]
 -----------------------------------------------
-                0.00    0.00       1/1           resultOp [4]
+                0.00    0.00       1/1           resultOp [5]
 [9]      0.0    0.00    0.00       1         calcularFibonacciIterativo [9]
 -----------------------------------------------
 
@@ -184,6 +182,6 @@ notice and this notice are preserved.
 
 Index by function name
 
-   [3] _init                   [5] calcularFatorialRecursivo [7] result
-   [1] calcSin                 [9] calcularFibonacciIterativo [4] resultOp
-   [8] calcularFatorialIterativo [6] calcularFibonacciRecursivo
+   [1] _init                   [6] calcularFatorialRecursivo [3] result
+   [2] calcSin                 [9] calcularFibonacciIterativo [5] resultOp
+   [8] calcularFatorialIterativo [7] calcularFibonacciRecursivo

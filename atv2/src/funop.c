@@ -24,6 +24,7 @@ void result(int n, Operacao op, Operacao op2){
     clock_gettime(CLOCK_MONOTONIC, &t1);
     getrusage(RUSAGE_SELF, &b);
 
+    calcSin(n);
     resultOp(n, op);
     
     getrusage(RUSAGE_SELF, &e);
@@ -44,6 +45,7 @@ void result(int n, Operacao op, Operacao op2){
 
     clock_gettime(CLOCK_MONOTONIC, &t1);
     getrusage(RUSAGE_SELF, &b);
+
 
     resultOp(n, op2);
     
@@ -82,8 +84,6 @@ int main(int argc, char* argv[]){
     printf(" - FIBONACCI - \n\n");
     printf("   Valor: %lld\n", resultOp(n, calcularFibonacciRecursivo));
     result(n, calcularFibonacciRecursivo, calcularFibonacciIterativo);
-    
-    calcSin(10, 1000);
 
     return 0;
 }

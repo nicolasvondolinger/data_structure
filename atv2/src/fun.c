@@ -3,6 +3,13 @@
 #include <stdio.h>
 #include <math.h>
 
+int calcSin(int n){
+  for(int j = 0; j < 100000000; j++){
+    n = sin(n);
+  }
+  return n;
+}
+
 long long int calcularFatorialRecursivo(long long int n)
 // Descricao: calcular o fatorial de n (n!)
 // Entrada: n
@@ -52,15 +59,4 @@ long long int calcularFibonacciIterativo(long long int n)
             return c;
         }
     }
-}
-
-int calcSin(int n, int i){
-  if(i == 0)
-    return 1;
-  else {
-    for(int j = 0; j < 1000000; j++){
-      n = sin(n);
-    }
-    return calcSin(n, i-1);
-  }
 }
