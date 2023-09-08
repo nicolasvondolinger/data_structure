@@ -1,0 +1,168 @@
+1. Analise o código e tente identificar eventuais erros
+
+    Apesar de o código compilar corretamente, ele falha em sua execução, devido a erro de memória.
+
+    nicolasvondolinger@nicolasvondolinger-82MF:~/Codes/data_structure/atv3/c4$ ./file
+    Segmentation fault (core dumped)
+
+2. Utilizando as ferramentas, confirme a sua avaliação ou identifique problemas.
+
+    Relatório do Valgrind:
+
+    ==4796== Memcheck, a memory error detector
+    ==4796== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+    ==4796== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+    ==4796== Command: file
+    ==4796== 
+    Usage: file [-bcCdEhikLlNnprsSvzZ0] [--apple] [--extension] [--mime-encoding]
+                [--mime-type] [-e <testname>] [-F <separator>]  [-f <namefile>]
+                [-m <magicfiles>] [-P <parameter=value>] [--exclude-quiet]
+                <file> ...
+        file -C [-m <magicfiles>]
+        file [--help]
+    ==4796== 
+    ==4796== HEAP SUMMARY:
+    ==4796==     in use at exit: 177,032 bytes in 12 blocks
+    ==4796==   total heap usage: 38 allocs, 26 frees, 185,886 bytes allocated
+    ==4796== 
+    ==4796== LEAK SUMMARY:
+    ==4796==    definitely lost: 0 bytes in 0 blocks
+    ==4796==    indirectly lost: 0 bytes in 0 blocks
+    ==4796==      possibly lost: 0 bytes in 0 blocks
+    ==4796==    still reachable: 177,032 bytes in 12 blocks
+    ==4796==         suppressed: 0 bytes in 0 blocks
+    ==4796== Rerun with --leak-check=full to see details of leaked memory
+    ==4796== 
+    ==4796== For lists of detected and suppressed errors, rerun with: -s
+    ==4796== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+    Relatório do Valgrind com a adição do comando "--leak-check=full":
+
+    ==4939== Memcheck, a memory error detector
+    ==4939== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+    ==4939== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+    ==4939== Command: ./file
+    ==4939== 
+    ==4939== Use of uninitialised value of size 8
+    ==4939==    at 0x10917A: main (c4.c:13)
+    ==4939== 
+    ==4939== Invalid write of size 4
+    ==4939==    at 0x10917A: main (c4.c:13)
+    ==4939==  Address 0x0 is not stack'd, malloc'd or (recently) free'd
+    ==4939== 
+    ==4939== 
+    ==4939== Process terminating with default action of signal 11 (SIGSEGV)
+    ==4939==  Access not within mapped region at address 0x0
+    ==4939==    at 0x10917A: main (c4.c:13)
+    ==4939==  If you believe this happened as a result of a stack
+    ==4939==  overflow in your program's main thread (unlikely but
+    ==4939==  possible), you can try to increase the size of the
+    ==4939==  main thread stack using the --main-stacksize= flag.
+    ==4939==  The main thread stack size used in this run was 8388608.
+    ==4939== 
+    ==4939== HEAP SUMMARY:
+    ==4939==     in use at exit: 0 bytes in 0 blocks
+    ==4939==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
+    ==4939== 
+    ==4939== All heap blocks were freed -- no leaks are possible
+    ==4939== 
+    ==4939== Use --track-origins=yes to see where uninitialised values come from
+    ==4939== For lists of detected and suppressed errors, rerun with: -s
+    ==4939== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+
+    Nesse sentido, a saída corresponde a analise feita no passo 1. O código apresenta os seguintes erros:
+
+    Ponteiro de estrutura não alocado dinamicamente: a variável rotation3D foi declarada duas vezes. 
+    Primeiro como um ponteiro global e depois dentro da função main. No entanto, a memória não foi alocada para estrutura dentro da função main.
+
+    Falta de alocação de memória para a estrutura: a memória foi aocada para a matriz de inteiros (rotation3D->data), mas não para a própria estrutura rotation3D.
+
+    Uso de ponteiro não inicializado: há a tentativa de acessar rotation3D->rows e rotation3D->cols antes de alocar memória para a estrutura. 
+    Isso causará um erro de acesso a um ponteiro não inicializado.
+
+3. Corrija o código, removendo o(s) erro(s) identificado(s).
+
+    #include <stdlib.h>
+
+    struct Matrix {
+        int rows, cols;
+        int** data;
+    };
+
+    int main() {
+        int i;
+        struct Matrix* rotation3D;
+
+        // Aloca memória para a estrutura Matrix
+        rotation3D = (struct Matrix*)malloc(sizeof(struct Matrix));
+
+        rotation3D->rows = 4;
+        rotation3D->cols = 4;
+
+        // Aloca memória para a matriz de inteiros
+        rotation3D->data = (int**)malloc(sizeof(int*) * rotation3D->rows);
+        for (i = 0; i < rotation3D->rows; i++) {
+            rotation3D->data[i] = (int*)malloc(sizeof(int) * rotation3D->cols);
+        }
+
+        // Libera a memória alocada para a matriz de inteiros
+        for (i = 0; i < rotation3D->rows; i++) {
+            free(rotation3D->data[i]);
+        }
+        free(rotation3D->data);
+
+        // Libera a memória alocada para a estrutura Matrix
+        free(rotation3D);
+
+        return 0;
+    }
+
+4. Utilizando novamente as ferramentas, verifique a remoção do erro.
+
+    Relatório do Valgrind:
+
+    ==5512== Memcheck, a memory error detector
+    ==5512== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+    ==5512== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+    ==5512== Command: file
+    ==5512== 
+    Usage: file [-bcCdEhikLlNnprsSvzZ0] [--apple] [--extension] [--mime-encoding]
+                [--mime-type] [-e <testname>] [-F <separator>]  [-f <namefile>]
+                [-m <magicfiles>] [-P <parameter=value>] [--exclude-quiet]
+                <file> ...
+        file -C [-m <magicfiles>]
+        file [--help]
+    ==5512== 
+    ==5512== HEAP SUMMARY:
+    ==5512==     in use at exit: 177,032 bytes in 12 blocks
+    ==5512==   total heap usage: 38 allocs, 26 frees, 185,886 bytes allocated
+    ==5512== 
+    ==5512== LEAK SUMMARY:
+    ==5512==    definitely lost: 0 bytes in 0 blocks
+    ==5512==    indirectly lost: 0 bytes in 0 blocks
+    ==5512==      possibly lost: 0 bytes in 0 blocks
+    ==5512==    still reachable: 177,032 bytes in 12 blocks
+    ==5512==         suppressed: 0 bytes in 0 blocks
+    ==5512== Rerun with --leak-check=full to see details of leaked memory
+    ==5512== 
+    ==5512== For lists of detected and suppressed errors, rerun with: -s
+    ==5512== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+    Relatório do Valgrind com a adição do comando "--leak-check=full":
+
+    ==5513== Memcheck, a memory error detector
+    ==5513== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+    ==5513== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+    ==5513== Command: ./file
+    ==5513== 
+    ==5513== 
+    ==5513== HEAP SUMMARY:
+    ==5513==     in use at exit: 0 bytes in 0 blocks
+    ==5513==   total heap usage: 6 allocs, 6 frees, 112 bytes allocated
+    ==5513== 
+    ==5513== All heap blocks were freed -- no leaks are possible
+    ==5513== 
+    ==5513== For lists of detected and suppressed errors, rerun with: -s
+    ==5513== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+    Código compilado e executado sem erros.
