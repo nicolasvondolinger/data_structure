@@ -1,0 +1,100 @@
+1. Analise o código e tente identificar eventuais erros
+
+    O código, apesar de compilar e executar, apresenta um erro de lógica
+    não previsto para a sua execução correta, pois a sua saída é a seguinte:
+
+    nicolasvondolinger@nicolasvondolinger-82MF:~/Codes/data_structure/atv3/c2$ ./file
+    0 1 2 3 4 5 6 7 8 0
+
+    O que não corresponde com o esperado, pois o ultimo digito é considerado "lixo". 
+
+2. Utilizando as ferramentas, confirme a sua avaliação ou identifique problemas.
+
+    Erro apontado pelo Valgrind:
+
+    ==18363== Memcheck, a memory error detector
+    ==18363== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+    ==18363== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+    ==18363== Command: ./file
+    ==18363== 
+    ==18363== Conditional jump or move depends on uninitialised value(s)
+    ==18363==    at 0x48C41F4: __printf_buffer (vfprintf-process-arg.c:58)
+    ==18363==    by 0x48C5B30: __vfprintf_internal (vfprintf-internal.c:1459)
+    ==18363==    by 0x48BAF9E: printf (printf.c:33)
+    ==18363==    by 0x1091F1: main (c2.c:11)
+    ==18363== 
+    ==18363== Use of uninitialised value of size 8
+    ==18363==    at 0x48BA0EB: _itoa_word (_itoa.c:177)
+    ==18363==    by 0x48C3F7A: __printf_buffer (vfprintf-process-arg.c:155)
+    ==18363==    by 0x48C5B30: __vfprintf_internal (vfprintf-internal.c:1459)
+    ==18363==    by 0x48BAF9E: printf (printf.c:33)
+    ==18363==    by 0x1091F1: main (c2.c:11)
+    ==18363== 
+    ==18363== Conditional jump or move depends on uninitialised value(s)
+    ==18363==    at 0x48BA0FC: _itoa_word (_itoa.c:177)
+    ==18363==    by 0x48C3F7A: __printf_buffer (vfprintf-process-arg.c:155)
+    ==18363==    by 0x48C5B30: __vfprintf_internal (vfprintf-internal.c:1459)
+    ==18363==    by 0x48BAF9E: printf (printf.c:33)
+    ==18363==    by 0x1091F1: main (c2.c:11)
+    ==18363== 
+    ==18363== Conditional jump or move depends on uninitialised value(s)
+    ==18363==    at 0x48C3FCB: __printf_buffer (vfprintf-process-arg.c:186)
+    ==18363==    by 0x48C5B30: __vfprintf_internal (vfprintf-internal.c:1459)
+    ==18363==    by 0x48BAF9E: printf (printf.c:33)
+    ==18363==    by 0x1091F1: main (c2.c:11)
+    ==18363== 
+    0 1 2 3 4 5 6 7 8 0 
+    ==18363== 
+    ==18363== HEAP SUMMARY:
+    ==18363==     in use at exit: 0 bytes in 0 blocks
+    ==18363==   total heap usage: 1 allocs, 1 frees, 1,024 bytes allocated
+    ==18363== 
+    ==18363== All heap blocks were freed -- no leaks are possible
+    ==18363== 
+    ==18363== Use --track-origins=yes to see where uninitialised values come from
+    ==18363== For lists of detected and suppressed errors, rerun with: -s
+    ==18363== ERROR SUMMARY: 4 errors from 4 contexts (suppressed: 0 from 0)
+
+    Nesse sentido, o erro corresponde com a análise do passo 1.
+
+3. Corrija o código, removendo o(s) erro(s) identificado(s).
+
+O erro identificado está na condição de parada do for, que itera uma vez a mais do que 
+deveria, ocasionando no erro de acesso de memória. O código corrigido está abaixo:
+
+    #include <stdio.h>
+    #include <stdlib.h>
+
+    int main(int argc, char** argv){
+        int i;
+        int a[10];
+        for (i = 0; i < 9; i++)
+            a[i] = i;
+        
+        for (i = 0; i < 9; i++){
+            printf("%d ", a[i]);
+        }
+        printf("\n");
+        return 0;
+    }
+
+
+4. Utilizando novamente as ferramentas, verifique a remoção do erro.
+
+    ==18533== Memcheck, a memory error detector
+    ==18533== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+    ==18533== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+    ==18533== Command: ./file
+    ==18533== 
+    0 1 2 3 4 5 6 7 8 
+    ==18533== 
+    ==18533== HEAP SUMMARY:
+    ==18533==     in use at exit: 0 bytes in 0 blocks
+    ==18533==   total heap usage: 1 allocs, 1 frees, 1,024 bytes allocated
+    ==18533== 
+    ==18533== All heap blocks were freed -- no leaks are possible
+    ==18533== 
+    ==18533== For lists of detected and suppressed errors, rerun with: -s
+    ==18533== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+    Código compilado e executado sem erros.
