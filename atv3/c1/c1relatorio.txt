@@ -1,0 +1,95 @@
+1. Analise o código e tente identificar eventuais erros
+
+    O código apresenta um erro de compilação na linha 6.
+
+    6 |   int *a = malloc(sizeof(int) * 10);
+      |            ~~~~~~^~~~~~~~~~~~~~~~~~
+      |                  |
+      |                  void*
+
+    Nesse sentido, a linha é corrigida para: 
+    int *a = static_cast<int*>(malloc(sizeof(int) * 10));
+
+
+2. Utilizando as ferramentas, confirme a sua avaliação ou identifique problemas.
+
+    O código corrigido no passo 1 e utilizado nessa etapa está no estado abaixo:
+
+    #include <stdio.h>
+    #include <stdlib.h>
+
+    int main(int argc, char** argv) {
+        int i; int *a = (int*)malloc(sizeof(int) * 10);
+        if (!a) {
+            perror("malloc failed");
+            return -1;
+        }
+        for (i = 0; i < 11; i++) {
+            a[i] = i;
+        }
+        free(a);
+        return 0;
+    }
+
+    Erro apontado pelo Valgrind:
+
+    ==17634== Memcheck, a memory error detector
+    ==17634== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+    ==17634== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+    ==17634== Command: ./file
+    ==17634== 
+    ==17634== Invalid write of size 4
+    ==17634==    at 0x1091E7: main (c1.c:14)
+    ==17634==  Address 0x4a6d068 is 0 bytes after a block of size 40 alloc'd
+    ==17634==    at 0x4843828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+    ==17634==    by 0x1091A5: main (c1.c:6)
+    ==17634== 
+    ==17634== 
+    ==17634== HEAP SUMMARY:
+    ==17634==     in use at exit: 0 bytes in 0 blocks
+    ==17634==   total heap usage: 1 allocs, 1 frees, 40 bytes allocated
+    ==17634== 
+    ==17634== All heap blocks were freed -- no leaks are possible
+    ==17634== 
+    ==17634== For lists of detected and suppressed errors, rerun with: -s
+    ==17634== ERROR SUMMARY: 1 errors from 1 contexts (suppressed: 0 from 0)
+
+3. Corrija o código, removendo o(s) erro(s) identificado(s).
+
+O erro identificado está na condição de parada do for, que itera uma vez a mais do que 
+deveria, ocasionando no erro de acesso de memória. O código corrigido está abaixo:
+
+    #include <stdio.h>
+    #include <stdlib.h>
+
+    int main(int argc, char** argv) {
+        int i;int *a = (int*)malloc(sizeof(int) * 10);
+        if (!a) {
+            perror("malloc failed");
+            return -1;
+        }
+        for (i = 0; i < 10; i++) {
+            a[i] = i;
+        }
+        free(a);
+        return 0;
+    }
+
+4. Utilizando novamente as ferramentas, verifique a remoção do erro.
+
+    ==17892== Memcheck, a memory error detector
+    ==17892== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+    ==17892== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+    ==17892== Command: ./file
+    ==17892== 
+    ==17892== 
+    ==17892== HEAP SUMMARY:
+    ==17892==     in use at exit: 0 bytes in 0 blocks
+    ==17892==   total heap usage: 1 allocs, 1 frees, 40 bytes allocated
+    ==17892== 
+    ==17892== All heap blocks were freed -- no leaks are possible
+    ==17892== 
+    ==17892== For lists of detected and suppressed errors, rerun with: -s
+    ==17892== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+    Código compilado e executado sem erros.
