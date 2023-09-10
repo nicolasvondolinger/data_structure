@@ -1,0 +1,65 @@
+1. Analise o código e tente identificar eventuais erros
+
+    O código compila e executa corretamente. Portanto, não há erros aparentes.
+
+2. Utilizando as ferramentas, confirme a sua avaliação ou identifique problemas.
+
+    Relatório do Valgrind:
+
+    ==8345== Memcheck, a memory error detector
+    ==8345== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+    ==8345== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+    ==8345== Command: ./file
+    ==8345== 
+    ==8345== 
+    ==8345== HEAP SUMMARY:
+    ==8345==     in use at exit: 0 bytes in 0 blocks
+    ==8345==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
+    ==8345== 
+    ==8345== All heap blocks were freed -- no leaks are possible
+    ==8345== 
+    ==8345== For lists of detected and suppressed errors, rerun with: -s
+    ==8345== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+    O valgrind não acusa erros.
+
+    Relatório do Valgrind com a adição do comando "--leak-check=full":
+
+    ==8346== Memcheck, a memory error detector
+    ==8346== Copyright (C) 2002-2022, and GNU GPL'd, by Julian Seward et al.
+    ==8346== Using Valgrind-3.19.0 and LibVEX; rerun with -h for copyright info
+    ==8346== Command: ./file
+    ==8346== 
+    ==8346== 
+    ==8346== HEAP SUMMARY:
+    ==8346==     in use at exit: 0 bytes in 0 blocks
+    ==8346==   total heap usage: 0 allocs, 0 frees, 0 bytes allocated
+    ==8346== 
+    ==8346== All heap blocks were freed -- no leaks are possible
+    ==8346== 
+    ==8346== For lists of detected and suppressed errors, rerun with: -s
+    ==8346== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+    Esse relatório também não acusa erros.
+
+3. Corrija o código, removendo o(s) erro(s) identificado(s).
+
+    #include <stdio.h>
+    #include <stdlib.h>
+
+    int inc(int a) {
+    return a+1;
+    }
+
+    int main(int argc, char** argv) {
+    for(int i=1; i < 5; i++) {
+        int a = 1;
+        a = inc(a);
+    }
+
+    return argc;
+    }
+
+4. Utilizando novamente as ferramentas, verifique a remoção do erro.
+
+    Código compilado e executado sem erros.
