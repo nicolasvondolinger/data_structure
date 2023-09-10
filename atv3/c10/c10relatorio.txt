@@ -1,0 +1,159 @@
+1. Analise o código e tente identificar eventuais erros
+
+    O código compila e executa corretamente, apesar de sua execução ter sido interrompida manualmente. 
+    Portanto, não há erros aparentes.
+
+2. Utilizando as ferramentas, confirme a sua avaliação ou identifique problemas.
+
+    Relatório do Valgrind:
+
+    ==5739== Process terminating with default action of signal 2 (SIGINT)
+    ==5739==    at 0x49709E4: write (write.c:26)
+    ==5739==    by 0x48E9FAC: _IO_file_write@@GLIBC_2.2.5 (fileops.c:1180)
+    ==5739==    by 0x48EBA20: new_do_write (fileops.c:448)
+    ==5739==    by 0x48EBA20: _IO_do_write@@GLIBC_2.2.5 (fileops.c:425)
+    ==5739==    by 0x48EA7B4: _IO_new_file_xsputn (fileops.c:1243)
+    ==5739==    by 0x48EA7B4: _IO_file_xsputn@@GLIBC_2.2.5 (fileops.c:1196)
+    ==5739==    by 0x48BBAA0: __printf_buffer_flush_to_file (printf_buffer_to_file.c:59)
+    ==5739==    by 0x48BBAA0: __printf_buffer_to_file_done (printf_buffer_to_file.c:120)
+    ==5739==    by 0x48C5B38: __vfprintf_internal (vfprintf-internal.c:1460)
+    ==5739==    by 0x48BAF9E: printf (printf.c:33)
+    ==5739==    by 0x10919D: main (c10.c:10)
+    ==5739== 
+    ==5739== HEAP SUMMARY:
+    ==5739==     in use at exit: 98,880,128 bytes in 772,494 blocks
+    ==5739==   total heap usage: 772,494 allocs, 0 frees, 98,880,128 bytes allocated
+    ==5739== 
+    ==5739== LEAK SUMMARY:
+    ==5739==    definitely lost: 98,878,336 bytes in 772,487 blocks
+    ==5739==    indirectly lost: 0 bytes in 0 blocks
+    ==5739==      possibly lost: 640 bytes in 5 blocks
+    ==5739==    still reachable: 1,152 bytes in 2 blocks
+    ==5739==         suppressed: 0 bytes in 0 blocks
+    ==5739== Rerun with --leak-check=full to see details of leaked memory
+    ==5739== 
+    ==5739== For lists of detected and suppressed errors, rerun with: -s
+    ==5739== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+    O valgrind acusa que há erros de vazamento de memória.
+
+    Relatório do Valgrind com a adição do comando "--leak-check=full":
+
+    ==5769== Process terminating with default action of signal 2 (SIGINT)
+    ==5769==    at 0x49709E2: write (write.c:26)
+    ==5769==    by 0x48E9FAC: _IO_file_write@@GLIBC_2.2.5 (fileops.c:1180)
+    ==5769==    by 0x48EBA20: new_do_write (fileops.c:448)
+    ==5769==    by 0x48EBA20: _IO_do_write@@GLIBC_2.2.5 (fileops.c:425)
+    ==5769==    by 0x48EA7B4: _IO_new_file_xsputn (fileops.c:1243)
+    ==5769==    by 0x48EA7B4: _IO_file_xsputn@@GLIBC_2.2.5 (fileops.c:1196)
+    ==5769==    by 0x48BBAA0: __printf_buffer_flush_to_file (printf_buffer_to_file.c:59)
+    ==5769==    by 0x48BBAA0: __printf_buffer_to_file_done (printf_buffer_to_file.c:120)
+    ==5769==    by 0x48C5B38: __vfprintf_internal (vfprintf-internal.c:1460)
+    ==5769==    by 0x48BAF9E: printf (printf.c:33)
+    ==5769==    by 0x10919D: main (c10.c:10)
+    ==5769== 
+    ==5769== HEAP SUMMARY:
+    ==5769==     in use at exit: 24,519,680 bytes in 191,553 blocks
+    ==5769==   total heap usage: 191,553 allocs, 0 frees, 24,519,680 bytes allocated
+    ==5769== 
+    ==5769== 128 bytes in 1 blocks are possibly lost in loss record 2 of 4
+    ==5769==    at 0x4843828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+    ==5769==    by 0x10917E: main (c10.c:9)
+    ==5769== 
+    ==5769== 24,518,400 bytes in 191,550 blocks are definitely lost in loss record 4 of 4
+    ==5769==    at 0x4843828: malloc (in /usr/libexec/valgrind/vgpreload_memcheck-amd64-linux.so)
+    ==5769==    by 0x10917E: main (c10.c:9)
+    ==5769== 
+    ==5769== LEAK SUMMARY:
+    ==5769==    definitely lost: 24,518,400 bytes in 191,550 blocks
+    ==5769==    indirectly lost: 0 bytes in 0 blocks
+    ==5769==      possibly lost: 128 bytes in 1 blocks
+    ==5769==    still reachable: 1,152 bytes in 2 blocks
+    ==5769==         suppressed: 0 bytes in 0 blocks
+    ==5769== Reachable blocks (those to which a pointer was found) are not shown.
+    ==5769== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+    ==5769== 
+    ==5769== For lists of detected and suppressed errors, rerun with: -s
+    ==5769== ERROR SUMMARY: 2 errors from 2 contexts (suppressed: 0 from 0)
+
+    Esse relatório também acusa o mesmo erro.
+
+    A alocação repetida de memória sem liberá-la pode levar a vazamentos de memória, que é o que ocorre nesse código.
+
+3. Corrija o código, removendo o(s) erro(s) identificado(s).
+
+    #include <stdlib.h>
+    #include <stdio.h>
+
+    int main(void) {
+        int *p;
+
+        while (1) {
+            p = malloc(128); // Aloque memória
+            printf("%ld\n", (long)p);
+            free(p); // Libere a memória alocada
+        }
+
+        return 0;
+    }
+
+
+4. Utilizando novamente as ferramentas, verifique a remoção do erro.
+
+    Relatório do Valgrind:
+
+    ==6013== Process terminating with default action of signal 2 (SIGINT)
+    ==6013==    at 0x49709E2: write (write.c:26)
+    ==6013==    by 0x48E9FAC: _IO_file_write@@GLIBC_2.2.5 (fileops.c:1180)
+    ==6013==    by 0x48EBA20: new_do_write (fileops.c:448)
+    ==6013==    by 0x48EBA20: _IO_do_write@@GLIBC_2.2.5 (fileops.c:425)
+    ==6013==    by 0x48EBF42: _IO_file_overflow@@GLIBC_2.2.5 (fileops.c:783)
+    ==6013==    by 0x48ED1D4: _IO_default_xsputn (genops.c:399)
+    ==6013==    by 0x48ED1D4: _IO_default_xsputn (genops.c:370)
+    ==6013==    by 0x48EA7F0: _IO_new_file_xsputn (fileops.c:1264)
+    ==6013==    by 0x48EA7F0: _IO_file_xsputn@@GLIBC_2.2.5 (fileops.c:1196)
+    ==6013==    by 0x48BBAA0: __printf_buffer_flush_to_file (printf_buffer_to_file.c:59)
+    ==6013==    by 0x48BBAA0: __printf_buffer_to_file_done (printf_buffer_to_file.c:120)
+    ==6013==    by 0x48C5B38: __vfprintf_internal (vfprintf-internal.c:1460)
+    ==6013==    by 0x48BAF9E: printf (printf.c:33)
+    ==6013==    by 0x1091BD: main (c10.c:9)
+    ==6013== 
+    ==6013== HEAP SUMMARY:
+    ==6013==     in use at exit: 1,152 bytes in 2 blocks
+    ==6013==   total heap usage: 2 allocs, 0 frees, 1,152 bytes allocated
+    ==6013== 
+    ==6013== LEAK SUMMARY:
+    ==6013==    definitely lost: 0 bytes in 0 blocks
+    ==6013==    indirectly lost: 0 bytes in 0 blocks
+    ==6013==      possibly lost: 0 bytes in 0 blocks
+    ==6013==    still reachable: 1,152 bytes in 2 blocks
+    ==6013==         suppressed: 0 bytes in 0 blocks
+    ==6013== Rerun with --leak-check=full to see details of leaked memory
+    ==6013== 
+    ==6013== For lists of detected and suppressed errors, rerun with: -s
+    ==6013== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+    Relatório do Valgrind com a adição do comando "--leak-check=full":
+
+    ==6042==    by 0x48BBAA0: __printf_buffer_to_file_done (printf_buffer_to_file.c:120)
+    ==6042==    by 0x48C5B38: __vfprintf_internal (vfprintf-internal.c:1460)
+    ==6042==    by 0x48BAF9E: printf (printf.c:33)
+    ==6042==    by 0x1091BD: main (c10.c:9)
+    ==6042== 
+    ==6042== HEAP SUMMARY:
+    ==6042==     in use at exit: 1,152 bytes in 2 blocks
+    ==6042==   total heap usage: 2 allocs, 0 frees, 1,152 bytes allocated
+    ==6042== 
+    ==6042== LEAK SUMMARY:
+    ==6042==    definitely lost: 0 bytes in 0 blocks
+    ==6042==    indirectly lost: 0 bytes in 0 blocks
+    ==6042==      possibly lost: 0 bytes in 0 blocks
+    ==6042==    still reachable: 1,152 bytes in 2 blocks
+    ==6042==         suppressed: 0 bytes in 0 blocks
+    ==6042== Reachable blocks (those to which a pointer was found) are not shown.
+    ==6042== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+    ==6042== 
+    ==6042== For lists of detected and suppressed errors, rerun with: -s
+    ==6042== ERROR SUMMARY: 0 errors from 0 contexts (suppressed: 0 from 0)
+
+    Código compilado e executado sem erros.
