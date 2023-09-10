@@ -13,9 +13,6 @@ List* resizeArray(List* array) {
 
     // Verifique se a realocação foi bem-sucedida
     if (dPtr == NULL) {
-        // Tratamento de erro, se necessário
-        // Você pode retornar NULL ou tomar outras medidas apropriadas
-        // Por enquanto, vamos apenas retornar o array original
         return array;
     }
 
