@@ -19,7 +19,6 @@
 // assumimos o que o tamanho da palavra de máquina é 64 bits (8 bytes)
 // em uma versao posterior pode ser um parametro
 #define TAMPALAVRA 8
-#define TAMPALAVRA 1
 
 // variaveis globais para a captura de opcoes de linha de comando
 // poderia ser uma estrutura passada como parametro
