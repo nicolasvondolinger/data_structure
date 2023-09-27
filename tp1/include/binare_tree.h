@@ -1,3 +1,6 @@
+
+#include "node.h"
+
 typedef class binare_tree{
 private:
     void Insert();
@@ -24,21 +27,4 @@ binare_tree::binare_tree(){
 
 binare_tree::~binare_tree(){
     Clean();
-}
-
-typedef class Node{
-private:
-    Iten iten;
-    Node *left;
-    Node *right;
-public:
-    Node(/* args */);
-
-friend class binare_tree;
-};
-
-Node::Node(/* args */){
-    iten.SetKey(-1);
-    left = nullptr;
-    right = nullptr;
 }

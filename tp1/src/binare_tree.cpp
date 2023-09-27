@@ -1,7 +1,7 @@
-#include <stdlib.h>
-#include <stdio.h>
+#include <iostream>
+#include "./binare_tree.h"
 
-#include "binare_tree.h"
+//Implementação da Árvore
 
 void Insert(Node* &p, Iten iten){
     while (p!=NULL){
@@ -14,4 +14,9 @@ void Insert(Node* &p, Iten iten){
 
     p = new Node();
     p -> iten = iten;
+}
+
+void Clean(){
+    
+    root = nullptr;
 }
