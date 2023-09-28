@@ -1,20 +1,21 @@
-#include <stdio.h>
-#include <stdlib.h>
+#include <iostream>
+#include <string.h>
 
-#include "binare_tree.h"
-#include "stack.h"
+#include "../include/Stack.h"
+#include "../include/BinareTree.h"
 
+using namespace std;
 
 int precedence(char op){
-    if(op == "|") return 1;
-    if(op == "&") return 2;
+    if(op == '|') return 1;
+    if(op == '&') return 2;
     return 0;
 }
 
 int applyOP(int a, int b, char op){
-    switch (op){
+    switch(op){
         case '|': return a + b;
-        case '*': retunr a * b;
+        case '*': return a * b;
     }
 }
 
@@ -23,11 +24,14 @@ bool isDigit(char c){
     return false;
 }
 
-int evaluate(string tokens){
-    int result;
+int parseToInt(char c){
+    return c - '0';
+}
 
-    stack values = new Stack();
-    stack operators = new Stack();
+int evaluate(string tokens){
+
+    Stack values;
+    Stack operators;
 
     for(auto c: tokens){
         if(c == ' ') continue;
@@ -38,31 +42,55 @@ int evaluate(string tokens){
             values.StackUp(c);
         }
         else if(c == ')'){
-            while (!operatos.Empty() && operatos.top.right != '(')
+            while (!operators.Empty() && operators.top.right != '(')
             {
-                int val2 = values.Top();
+                int val2 = parseToInt(values.Top());
                 values.Unstack();
 
-                int val1 = values.Top();
+                int val1 = parseToInt(values.Top());
                 values.Unstack();
 
-                char op = operatos.Top();
+                char op = operators.Top();
+                operators.Unstack();
 
                 values.StackUp(applyOP(val1, val2, op));
 
             }
-            if(!operatos.Empty()) operators.Unstack();
-            
+            if(!operators.Empty()) operators.Unstack();
         }
         else
         {
             while(!operators.Empty() && precedence(operators.Top()) >= precedence(c)){
-                int val 
+                int val2 = parseToInt(values.Top());
+                values.Unstack();
+
+                int val1 = parseToInt(values.Top());
+                values.Unstack();
+
+                char op = operators.Top();
+                operators.Unstack();
+
+                values.StackUp(applyOP(val1, val2, op));
             }
+            operators.StackUp(c);
         }
     }
 
-    return result;
+    while(!operators.Empty()){
+        int val2 = parseToInt(values.Top());
+        values.Unstack();
+
+        int val1 = parseToInt(values.Top());
+        values.Unstack();
+
+        char op = operators.Top();
+        operators.Unstack();
+
+        values.StackUp(applyOP(val1, val2, op));
+
+    }
+
+    return values.Top();
 }
 
 int main(){

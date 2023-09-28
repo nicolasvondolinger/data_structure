@@ -1,19 +1,20 @@
-#include "node.h"
+#include "Node.h"
 
-typedef class stack{
+typedef class Stack{
 private:
     /* data */
     int length;
     Node* top;
 public:
     //Constructors
-    stack();
-    ~stack();
+    Stack();
+    ~Stack();
 
     void StackUp(char iten);
     char Unstack();
     void Clean();
-    int Top();
+
+    char Top();
 
     int GetLength();
     bool Empty();

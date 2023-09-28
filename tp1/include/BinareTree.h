@@ -1,7 +1,7 @@
 
-#include "node.h"
+#include "Node.h"
 
-typedef class binare_tree{
+typedef class BinareTree{
 private:
     void Insert();
     void Erase();
@@ -10,21 +10,21 @@ private:
     void InOrder(Node* p);
     void PosOrder(Node* p);
 
-    Node *root;//aaa
+    Node *root;
 
 public:
-    binare_tree();
-    ~binare_tree();
+    BinareTree();
+    ~BinareTree();
 
     void Insert(Iten i);
     void Walk(int t);
     void Clean();
 };
 
-binare_tree::binare_tree(){
+BinareTree::BinareTree(){
     root = nullptr;
 }
 
-binare_tree::~binare_tree(){
+BinareTree::~BinareTree(){
     Clean();
 }

@@ -1,18 +1,18 @@
 #include <stdlib.h>
 #include <stdio.h>
 
-#include "stack.h"
+#include "Stack.h"
 
 //Implementação da Pilha
 
-stack::stack(/* args */)
+Stack::Stack(/* args */)
 {
     top.right = nullptr;
     top.left = nullptr;
     length = 0;
 }
 
-stack::~stack()
+Stack::~Stack()
 {
     Clean();
 }
@@ -49,9 +49,8 @@ void Clean(){
     }
 }
 
-int Top(){
-    char c = top.iten;
-    return c - '0';
+char Top(){
+    return top.iten;
 }
 
 int GetLenght(){
