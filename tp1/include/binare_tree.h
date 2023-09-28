@@ -10,7 +10,7 @@ private:
     void InOrder(Node* p);
     void PosOrder(Node* p);
 
-    Node *root;
+    Node *root;//aaa
 
 public:
     binare_tree();
