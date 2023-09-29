@@ -7,8 +7,7 @@
 
 Stack::Stack(/* args */)
 {
-    top.right = nullptr;
-    top.left = nullptr;
+    top = nullptr;
     length = 0;
 }
 
@@ -17,46 +16,53 @@ Stack::~Stack()
     Clean();
 }
 
-void StackUp(char iten){
-    Node *n;
+void Stack::StackUp(char c){
+    Node* n = new Node();
 
-    n = new Node();
-    n->iten = iten;
-    n->right = top;
+    n->SetIten(c);
+    n->SetRight(top);
     top = n;
     length++;
 }
 
-char Unstack(){
+char Stack::Unstack(){
     char aux; Node *p;
 
     if(length == 0){
         throw "The Stack is Empty!";
     }
 
-    aux = top -> iten;
+    aux = top->GetIten();
     p = top;
-    top = top->right;
+    top = top->GetRight();
     delete p;
     length--;
 
     return aux;
 }
 
-void Clean(){
+void Stack::Clean(){
     while (!Empty()){
         Unstack();
     }
 }
 
-char Top(){
-    return top.iten;
+void Stack::SetTop(Node* node){
+    top = node;
 }
 
-int GetLenght(){
+Node* Stack::GetTop(){
+    return top;
+}
+
+char Stack::GetIten(){
+    return top->GetIten();
+}
+
+int Stack::GetLength(){
     return length;
 }
 
-bool Empty(){
+bool Stack::Empty(){
     return length == 0;
 }

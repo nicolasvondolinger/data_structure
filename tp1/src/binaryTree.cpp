@@ -1,9 +1,9 @@
 #include <iostream>
-#include "./BinareTree.h"
+#include "./BinaryTree.h"
 
 //Implementação da Árvore
 
-void BinareTree::Insert(Node* &p, Iten iten){
+void BinaryTree::Insert(Node* &p, Iten iten){
     while (p!=NULL){
         if(iten.getKey() < p->iten.getKey()){
             p = p -> left;
@@ -16,6 +16,6 @@ void BinareTree::Insert(Node* &p, Iten iten){
     p -> iten = iten;
 }
 
-void BinareTree::Clean(){
+void BinaryTree::Clean(){
     root = nullptr;
 }

@@ -1,6 +1,6 @@
 #include "Node.h"
 
-typedef class Stack{
+class Stack{
 private:
     /* data */
     int length;
@@ -14,7 +14,9 @@ public:
     char Unstack();
     void Clean();
 
-    char Top();
+    Node* GetTop();
+    void SetTop(Node* node);
+    char GetIten();
 
     int GetLength();
     bool Empty();

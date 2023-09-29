@@ -1,10 +1,16 @@
 #include <iostream>
 #include <string.h>
-
 #include "../include/Stack.h"
-#include "../include/BinareTree.h"
+//#include "../include/BinaryTree.h"
 
 using namespace std;
+
+#define EVALUATE 1
+#define SATISFACTION 2
+
+static int chosenop;
+char outnome[100];
+string tokens, valuation;
 
 int precedence(char op){
     if(op == '|') return 1;
@@ -15,25 +21,38 @@ int precedence(char op){
 int applyOP(int a, int b, char op){
     switch(op){
         case '|': return a + b;
-        case '*': return a * b;
+        case '&': return a * b;
     }
+    return 1;
 }
 
 bool isDigit(char c){
-    if(c != '|' || c != '&' || c != '~') return true;
-    return false;
+    return (c >= '0' && c <= '9');
 }
 
 int parseToInt(char c){
     return c - '0';
 }
 
-int evaluate(string tokens){
+void assignValues(string& tokens, string& valuation){
+    string result;
+    for(char c : tokens){
+        if(isDigit(c)){
+            int n = c - '0';
+            result += valuation[n];
+        } else{
+            result += c;
+        }
+    }
+    tokens = result;
+}
+
+int evaluate(string tokens, string valuation){
 
     Stack values;
     Stack operators;
 
-    for(auto c: tokens){
+    for(char c: tokens){
         if(c == ' ') continue;
         else if(c == '('){
             operators.StackUp(c);
@@ -42,15 +61,15 @@ int evaluate(string tokens){
             values.StackUp(c);
         }
         else if(c == ')'){
-            while (!operators.Empty() && operators.top.right != '(')
+            while (!operators.Empty() && operators.GetIten() != '(')
             {
-                int val2 = parseToInt(values.Top());
+                int val2 = parseToInt(values.GetIten());
                 values.Unstack();
 
-                int val1 = parseToInt(values.Top());
+                int val1 = parseToInt(values.GetIten());
                 values.Unstack();
 
-                char op = operators.Top();
+                char op = operators.GetIten();
                 operators.Unstack();
 
                 values.StackUp(applyOP(val1, val2, op));
@@ -60,14 +79,14 @@ int evaluate(string tokens){
         }
         else
         {
-            while(!operators.Empty() && precedence(operators.Top()) >= precedence(c)){
-                int val2 = parseToInt(values.Top());
+            while(!operators.Empty() && precedence(operators.GetIten()) >= precedence(c)){
+                int val2 = parseToInt(values.GetIten());
                 values.Unstack();
 
-                int val1 = parseToInt(values.Top());
+                int val1 = parseToInt(values.GetIten());
                 values.Unstack();
 
-                char op = operators.Top();
+                char op = operators.GetIten();
                 operators.Unstack();
 
                 values.StackUp(applyOP(val1, val2, op));
@@ -77,27 +96,59 @@ int evaluate(string tokens){
     }
 
     while(!operators.Empty()){
-        int val2 = parseToInt(values.Top());
+        int val2 = parseToInt(values.GetIten());
         values.Unstack();
 
-        int val1 = parseToInt(values.Top());
+        int val1 = parseToInt(values.GetIten());
         values.Unstack();
 
-        char op = operators.Top();
+        char op = operators.GetIten();
         operators.Unstack();
 
         values.StackUp(applyOP(val1, val2, op));
 
     }
 
-    return values.Top();
+    return values.GetIten();
 }
 
-int main(){
-    
-    string s; cin >> s;
+void parse_args(int argc,char ** argv){
 
-    evaluate(s);
+    if (argc != 4) {
+        std::cerr << "Uso: " << argv[0] << " -a|-s \"tokens\" valuation\n";
+        exit(1); // Saia com código de erro
+    }
+
+    // Processar argumentos manualmente
+    if (strcmp(argv[1], "-a") == 0) {
+        chosenop = EVALUATE;
+    } else if (strcmp(argv[1], "-s") == 0) {
+        chosenop = SATISFACTION;
+    }
+
+    tokens = argv[2];
+    valuation = argv[3];
+
+    // Verifique se uma operação válida foi escolhida
+    /*if (chosenop == NONE || tokens == nullptr || valuation == 0) {
+        std::cerr << "Argumentos inválidos.\n";
+        exit(1); // Saia com código de erro
+    }*/
+}
+
+int main(int argc, char ** argv){
+
+    parse_args(argc, argv);
+    switch(chosenop){
+        case EVALUATE:
+            assignValues(tokens, valuation);
+            cout << tokens << endl;
+            cout << evaluate(tokens, valuation) << endl;
+            break;
+        default:
+            break;
+    }
+    cout << "FUNFA" << endl;
 
     return 0;
 }

@@ -1,7 +1,6 @@
-
 #include "Node.h"
 
-typedef class BinareTree{
+class BinaryTree{
 private:
     void Insert();
     void Erase();
@@ -13,18 +12,19 @@ private:
     Node *root;
 
 public:
-    BinareTree();
-    ~BinareTree();
-
-    void Insert(Iten i);
+    BinaryTree();
+    ~BinaryTree();
+    
+    
+    void Insert(char i);
     void Walk(int t);
     void Clean();
 };
 
-BinareTree::BinareTree(){
+BinaryTree::BinaryTree(){
     root = nullptr;
 }
 
-BinareTree::~BinareTree(){
+BinaryTree::~BinaryTree(){
     Clean();
 }
