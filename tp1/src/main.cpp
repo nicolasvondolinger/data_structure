@@ -81,6 +81,10 @@ int evaluate(string tokens, string valuation){
         else if(c == ')'){
             while (operators.GetIten() != '(')
             {
+                if(operators.GetIten() == '~'){
+                    values.StackUp(applyNeg(values.Unstack()));
+                    operators.Unstack();
+                }
                 int val2 = parseToInt(values.GetIten());
                 values.Unstack();
 
@@ -94,7 +98,6 @@ int evaluate(string tokens, string valuation){
 
             }
             if(!operators.Empty()) operators.Unstack();
-            if(operators.GetIten() == '~') values.StackUp(applyNeg(values.Unstack()));
         }
         else
         {
@@ -102,6 +105,7 @@ int evaluate(string tokens, string valuation){
                 
                 if(operators.GetIten() == '~') {
                     values.StackUp(applyNeg(values.Unstack()));
+                    operators.Unstack();
                 }
                 
                 int val2 = parseToInt(values.GetIten());
@@ -123,6 +127,7 @@ int evaluate(string tokens, string valuation){
 
         if(operators.GetIten() == '~') {
             values.StackUp(applyNeg(values.Unstack()));
+            operators.Unstack();
         }
 
         int val2 = parseToInt(values.GetIten());
