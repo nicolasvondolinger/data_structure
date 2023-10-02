@@ -1,7 +1,10 @@
 #include <stdlib.h>
 #include <stdio.h>
+#include <iostream>
 
 #include "Stack.h"
+
+using namespace std;
 
 //Implementação da Pilha
 
@@ -26,9 +29,11 @@ void Stack::StackUp(char c){
 }
 
 char Stack::Unstack(){
-    char aux; Node *p;
+    char aux;
+    Node *p;
 
-    if(length == 0){
+    if(length == 0 || top == nullptr){ // Adicione a verificação de top
+        cout << "VAZIA" << endl;
         throw "The Stack is Empty!";
     }
 
@@ -40,6 +45,7 @@ char Stack::Unstack(){
 
     return aux;
 }
+
 
 void Stack::Clean(){
     while (!Empty()){

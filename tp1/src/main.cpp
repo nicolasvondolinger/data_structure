@@ -33,6 +33,14 @@ int applyOP(int a, int b, char op){
     }
 }
 
+char applyNeg(char a){
+    switch(a){
+        case '0': return '1';
+        case '1': return '0';
+        default: return ' ';
+    }
+}
+
 bool isDigit(char c){
     return (c >= '0' && c <= '9');
 }
@@ -79,10 +87,11 @@ int evaluate(string tokens, string valuation){
                 char op = operators.GetIten();
                 operators.Unstack();
 
-                values.StackUp(applyOP(val1, val2, op));
+                values.StackUp(applyOP(val1, val2, op) + '0');
 
             }
-            operators.Unstack();
+            if(!operators.Empty()) operators.Unstack();
+            if(operators.GetIten() == '~') values.StackUp(applyNeg(values.Unstack()));
         }
         else
         {
@@ -96,13 +105,18 @@ int evaluate(string tokens, string valuation){
                 char op = operators.GetIten();
                 operators.Unstack();
 
-                values.StackUp(applyOP(val1, val2, op));
+                values.StackUp(applyOP(val1, val2, op) + '0');
             }
             operators.StackUp(c);
         }
     }
 
     while(!operators.Empty()){
+
+        if(operators.GetIten() == '~') {
+            values.StackUp(applyNeg(values.Unstack()));
+        }
+
         int val2 = parseToInt(values.GetIten());
         values.Unstack();
 
@@ -112,10 +126,10 @@ int evaluate(string tokens, string valuation){
         char op = operators.GetIten();
         operators.Unstack();
         
-        values.StackUp(applyOP(val1, val2, op));
+        values.StackUp(applyOP(val1, val2, op) + '0');
     }
 
-    return values.Unstack();
+    return parseToInt(values.GetIten());
 }
 
 void parse_args(int argc,char ** argv){
