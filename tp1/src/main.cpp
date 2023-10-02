@@ -69,6 +69,9 @@ int evaluate(string tokens, string valuation){
 
     for(char c: tokens){
         if(c == ' ') continue;
+        else if (c == '~'){
+            operators.StackUp(c);
+        }
         else if(c == '('){
             operators.StackUp(c);
         }
@@ -96,6 +99,11 @@ int evaluate(string tokens, string valuation){
         else
         {
             while(!operators.Empty() && precedence(operators.GetIten()) >= precedence(c)){
+                
+                if(operators.GetIten() == '~') {
+                    values.StackUp(applyNeg(values.Unstack()));
+                }
+                
                 int val2 = parseToInt(values.GetIten());
                 values.Unstack();
 
