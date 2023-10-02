@@ -14,14 +14,14 @@ string tokens, valuation;
 
 int precedence(char op){
     switch (op){
-    case '|':
-        return 2;
-    case '&':
-        return 1;
-    case '~':
-        return 3;
-    default:
-        return 0;
+        case '|':
+            return 1;
+        case '&':
+            return 2;
+        case '~':
+            return 3;
+        default:
+            return 0;
     }
 }
 
@@ -68,7 +68,7 @@ int evaluate(string tokens, string valuation){
             values.StackUp(c);
         }
         else if(c == ')'){
-            while (!operators.Empty() && operators.GetIten() != '(')
+            while (operators.GetIten() != '(')
             {
                 int val2 = parseToInt(values.GetIten());
                 values.Unstack();
@@ -82,7 +82,7 @@ int evaluate(string tokens, string valuation){
                 values.StackUp(applyOP(val1, val2, op));
 
             }
-            if(!operators.Empty()) operators.Unstack();
+            operators.Unstack();
         }
         else
         {
@@ -111,12 +111,11 @@ int evaluate(string tokens, string valuation){
 
         char op = operators.GetIten();
         operators.Unstack();
-
+        
         values.StackUp(applyOP(val1, val2, op));
-
     }
 
-    return values.GetIten();
+    return values.Unstack();
 }
 
 void parse_args(int argc,char ** argv){

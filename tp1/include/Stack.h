@@ -16,6 +16,7 @@ public:
 
     Node* GetTop();
     void SetTop(Node* node);
+    
     char GetIten();
 
     int GetLength();
