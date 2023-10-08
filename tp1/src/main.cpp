@@ -26,6 +26,7 @@ int precedence(char op){
 }
 
 int applyOP(int a, int b, char op){
+    if(a == 1 && b == 1 && op == '|') return a;
     switch(op){
         case '|': return a + b;
         case '&': return a * b;
