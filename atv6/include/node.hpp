@@ -1,13 +1,21 @@
-#pragma once
+// node.hpp
+#ifndef NODE_HPP
+#define NODE_HPP
 
-class Node{
-private:
-    int conections[10000];
-    Node *next;
+#include <vector>
+
+class Node {
 public:
-    Node(/* args */);
-    void SetIten(int c);
-    int GetIten() const;
+    Node();
+    void SetData(int c);
+    int GetData() const;
     void SetNext(Node* node);
     Node* GetNext() const;
+    std::vector<int>& GetConnections(); 
+private:
+    int data;
+    Node* next;
+    std::vector<int> connections; 
 };
+
+#endif

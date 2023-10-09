@@ -1,37 +1,34 @@
-#include "../include/graph.hpp"
+// graph.cpp
+#include "graph.hpp"
 
-Grafo::Grafo(){
+Grafo::Grafo() {}
 
+Grafo::~Grafo() {}
+
+void Grafo::InsereVertice(int data) {
+    vertices.InsereVertice(data);
 }
 
-Grafo::~Grafo(){
-
+void Grafo::InsereAresta(int v, int w) {
+    vertices.InsereAresta(v, w);
 }
 
-void Grafo::InsereVertice(){
-    vertices
-};
-
-void Grafo::InsereAresta(int v, int w){
-
-}
-
-int Grafo::QuantidadeVertices(){
+int Grafo::QuantidadeVertices() {
     return vertices.QuantidadeVertice();
 }
 
-int Grafo::QuantidadeArestas(){
-
+int Grafo::QuantidadeArestas() {
+    return vertices.QuantidadeAresta();
 }
 
-int Grafo::GrauMinimo(){
-
+int Grafo::GrauMinimo() {
+    return vertices.GrauMinimo();
 }
 
-int Grafo::GrauMaximo(){
-
+int Grafo::GrauMaximo() {
+    return vertices.GrauMaximo();
 }
 
-void ImprimeVizinhos(int v){
-
+void Grafo::ImprimeVizinhos() {
+    vertices.ImprimeVizinhos();
 }

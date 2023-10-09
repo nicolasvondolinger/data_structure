@@ -1,21 +1,24 @@
-#include "../include/node.hpp"
+// node.cpp
+#include "node.hpp"
 
-Node::Node(){
-    next = nullptr;
+Node::Node() : data(-1), next(nullptr) {}
+
+void Node::SetData(int c) {
+    data = c;
 }
 
-void Node::SetIten(int c){
-    iten = c;
+int Node::GetData() const {
+    return data;
 }
 
-int Node::GetIten() const {
-    return iten;
-}
-
-void Node::SetNext(Node* node){
+void Node::SetNext(Node* node) {
     next = node;
 }
 
 Node* Node::GetNext() const {
     return next;
+}
+
+std::vector<int>& Node::GetConnections() {
+    return connections;
 }
