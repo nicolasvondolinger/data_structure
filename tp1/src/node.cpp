@@ -1,4 +1,5 @@
 #include "Node.h"
+#include <string>
 
 Node::Node(){
     left = nullptr;
@@ -11,6 +12,14 @@ void Node::SetIten(char c){
 
 char Node::GetIten() const {
     return iten;
+}
+
+void Node::SetExpression(string s){
+    expression = s;
+}
+
+string Node::GetExpression() const{
+    return expression;
 }
 
 void Node::SetRight(Node* node){

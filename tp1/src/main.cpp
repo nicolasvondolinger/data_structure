@@ -1,7 +1,7 @@
 #include <iostream>
 #include <string.h>
 #include "../include/Stack.h"
-//#include "../include/BinaryTree.h"
+#include "../include/BinaryTree.h"
 
 using namespace std;
 
@@ -28,9 +28,11 @@ int precedence(char op){
 int applyOP(int a, int b, char op){
     if(a == 1 && b == 1 && op == '|') return a;
     switch(op){
-        case '|': return a + b;
+        case '|': 
+            if(a == 1 && b == 1) return a;
+            else return a+b;
         case '&': return a * b;
-        default: return 1;
+        default: throw std::runtime_error("Invalid Operator");
     }
 }
 
@@ -38,7 +40,7 @@ char applyNeg(char a){
     switch(a){
         case '0': return '1';
         case '1': return '0';
-        default: return ' ';
+        default: throw std::runtime_error("Invalid Value");
     }
 }
 
@@ -52,13 +54,20 @@ int parseToInt(char c){
 
 void assignValues(string& tokens, string& valuation){
     string result;
-    for(char c : tokens){
-        if(isDigit(c)){
-            int n = c - '0';
+    int i = 0;
+    while(tokens[i] != '\0'){
+        if(isDigit(tokens[i])){
+            int n = tokens[i] - '0';
+            if(isDigit(tokens[i+1])){
+                n *= 10;
+                n += parseToInt(tokens[i+1]);
+                i++;
+            }
             result += valuation[n];
-        } else{
-            result += c;
+        } else {
+            result += tokens[i];
         }
+        i++;
     }
     tokens = result;
 }
@@ -85,6 +94,7 @@ int evaluate(string tokens, string valuation){
                 if(operators.GetIten() == '~'){
                     values.StackUp(applyNeg(values.Unstack()));
                     operators.Unstack();
+                    break;
                 }
                 int val2 = parseToInt(values.GetIten());
                 values.Unstack();
@@ -107,6 +117,7 @@ int evaluate(string tokens, string valuation){
                 if(operators.GetIten() == '~') {
                     values.StackUp(applyNeg(values.Unstack()));
                     operators.Unstack();
+                    break;
                 }
                 
                 int val2 = parseToInt(values.GetIten());
@@ -129,6 +140,7 @@ int evaluate(string tokens, string valuation){
         if(operators.GetIten() == '~') {
             values.StackUp(applyNeg(values.Unstack()));
             operators.Unstack();
+            break;
         }
 
         int val2 = parseToInt(values.GetIten());
@@ -144,6 +156,49 @@ int evaluate(string tokens, string valuation){
     }
 
     return parseToInt(values.GetIten());
+}
+
+void assignValuesSatisfaction(string& tokens, string valuation, BinaryTree& tree){
+    string r = "", l = "";
+    int i = 0; bool done = false;
+    while(tokens[i] != '\0'){
+        if(isDigit(tokens[i])){
+            int n = tokens[i] - '0';
+            if(isDigit(tokens[i+1])){
+                n *= 10; n += (tokens[i+1] + '0');
+                i++;
+            }
+            if (!isDigit(valuation[n]) && !done){
+                done = true;
+                l += '1';
+                r += '0';
+            } else if(isDigit(valuation[n])){
+                r += valuation[n];
+                l += valuation[n];
+            } else {
+                r += tokens[i];
+                l += tokens[i];
+            }
+        } else {
+            r += tokens[i];
+            l += tokens[i];
+        }
+        i++;
+    }
+    tree.InsertRight(r);
+    tree.InsertLeft(l);
+    //tokens = result;
+    if(!done){
+        assignValuesSatisfaction(tokens, valuation, tree);
+    }
+}
+
+int satisfaction(string tokens, string valuation){
+    
+    BinaryTree tree;
+    tree.SetRoot(tokens);
+    assignValuesSatisfaction(tokens, valuation, tree);
+    
 }
 
 void parse_args(int argc,char ** argv){
