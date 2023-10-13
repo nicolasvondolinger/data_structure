@@ -1,5 +1,6 @@
 #include <iostream>
 #include <string.h>
+#include <getopt.h>
 #include "../include/Stack.h"
 #include "../include/BinaryTree.h"
 
@@ -8,8 +9,6 @@ using namespace std;
 #define EVALUATE 1
 #define SATISFACTION 2
 
-static int chosenop;
-char outnome[100];
 string tokens, valuation;
 
 int precedence(char op){
@@ -158,7 +157,7 @@ int evaluate(string tokens, string valuation){
     return parseToInt(values.GetIten());
 }
 
-void assignValuesSatisfaction(string& tokens, string valuation, BinaryTree& tree){
+/*void assignValuesSatisfaction(string& tokens, string valuation, BinaryTree& tree){
     string r = "", l = "";
     int i = 0; bool done = false;
     while(tokens[i] != '\0'){
@@ -191,53 +190,36 @@ void assignValuesSatisfaction(string& tokens, string valuation, BinaryTree& tree
     if(!done){
         assignValuesSatisfaction(tokens, valuation, tree);
     }
-}
+}*/
 
-int satisfaction(string tokens, string valuation){
+/*int satisfaction(string tokens, string valuation){
     
     BinaryTree tree;
     tree.SetRoot(tokens);
     assignValuesSatisfaction(tokens, valuation, tree);
     
-}
+}*/
 
-void parse_args(int argc,char ** argv){
-
-    if (argc != 4) {
-        std::cerr << "Uso: " << argv[0] << " -a|-s \"tokens\" valuation\n";
-        exit(1); // Saia com código de erro
-    }
-
-    // Processar argumentos manualmente
-    if (strcmp(argv[1], "-a") == 0) {
-        chosenop = EVALUATE;
-    } else if (strcmp(argv[1], "-s") == 0) {
-        chosenop = SATISFACTION;
-    }
-
+int main(int argc, char* argv[]){
+    int opt;
+    
     tokens = argv[2];
     valuation = argv[3];
 
-    // Verifique se uma operação válida foi escolhida
-    /*if (chosenop == NONE || tokens == nullptr || valuation == 0) {
-        std::cerr << "Argumentos inválidos.\n";
-        exit(1); // Saia com código de erro
-    }*/
-}
-
-int main(int argc, char ** argv){
-
-    parse_args(argc, argv);
-    switch(chosenop){
-        case EVALUATE:
-            assignValues(tokens, valuation);
-            cout << tokens << endl;
-            cout << evaluate(tokens, valuation) << endl;
-            break;
-        default:
-            break;
+    while ((opt = getopt(argc, argv, "ae")) != -1) {
+        switch (opt) {
+            case 'a':
+                assignValues(tokens, valuation);
+                cout << tokens << endl;
+                cout << evaluate(tokens, valuation) << endl;
+                cout << "FUNFA" << endl;
+                break;
+            case 'e':
+                break;
+            default:
+                return 1;
+        }
     }
-    cout << "FUNFA" << endl;
 
     return 0;
 }
