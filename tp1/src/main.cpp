@@ -9,7 +9,11 @@ using namespace std;
 #define EVALUATE 1
 #define SATISFACTION 2
 
+const int MAX = 1000000;
+
 string tokens, valuation;
+int possibility [MAX]; string expression [MAX];
+int s = 0;
 
 int precedence(char op){
     switch (op){
@@ -157,9 +161,13 @@ int evaluate(string tokens){
     return parseToInt(values.GetIten());
 }
 
-void assignValuesSatisfaction(string& tokens, string valuation, BinaryTree& tree, Node* p){
+int assignValuesSatisfaction(string& tokens, string valuation, BinaryTree& tree, Node* p, int position){
     string r = "", l = "";
     int i = 0; bool done = false;
+    while(i != position){
+        r = tokens[i]; l = tokens[i];
+        i++;
+    }
     while(tokens[i] != '\0'){
         if(isDigit(tokens[i])){
             int n = tokens[i] - '0';
@@ -171,6 +179,7 @@ void assignValuesSatisfaction(string& tokens, string valuation, BinaryTree& tree
                 done = true;
                 l += '1';
                 r += '0';
+                position = i;
             } else if(isDigit(valuation[n])){
                 r += valuation[n];
                 l += valuation[n];
@@ -185,23 +194,27 @@ void assignValuesSatisfaction(string& tokens, string valuation, BinaryTree& tree
         tree.InsertRight(p, r);
         tree.InsertLeft(p, l);
     }
+    return position;
 }
 
 void buildTree(string tokens, string valuation, BinaryTree& tree, Node* p){
+    int position = 0;
     if(p!= nullptr){
+        cout << p->GetExpression() << endl;
         buildTree(tokens, valuation, tree, p->GetLeft());
-        assignValuesSatisfaction(tokens, valuation, tree, p);
         buildTree(tokens, valuation, tree, p->GetRight());
+        position = assignValuesSatisfaction(tokens, valuation, tree, p, position);
     }
 }
 
-void byLevel(string tokens, string valuation, BinaryTree& tree, Node* p){
-    if(p != nullptr){
-        cout << p->GetExpression() << endl;
-        byLevel(tokens, valuation, tree, p->GetLeft());
-        byLevel(tokens, valuation, tree, p->GetRight());
+void byLevel(string tokens, BinaryTree& tree, Node* p){
+    if(p->GetRight() != nullptr){
+        byLevel(tokens, tree, p->GetLeft());
+        byLevel(tokens, tree, p->GetRight());
     } else{
-        evaluate(p->GetExpression());
+        possibility[s] = evaluate(p->GetExpression());
+        expression[s] = p->GetExpression();
+        s++;
     }
 }
 
@@ -209,9 +222,47 @@ void satisfaction(string tokens, string valuation){
     BinaryTree tree;
     tree.SetRoot(tokens);
     Node* p = tree.GetRoot();
-    assignValuesSatisfaction(tokens, valuation, tree, p);
+    assignValuesSatisfaction(tokens, valuation, tree, p, 0);
     buildTree(tokens, valuation, tree, p);
-    byLevel(tokens, valuation, tree, p);
+    byLevel(tokens, tree, p);
+}
+
+void printPossibility(string tokens, string valuation) {
+    int trueCount = 0;
+    string alteredValuation = valuation;
+    int index;
+    for (int i = 0; i < s; i++) {
+        if (possibility[i] == 1) {
+            trueCount++;
+            index = i;
+            if (trueCount == s) {
+                int j = 0;
+                while (alteredValuation[j] != '\0') {
+                    if (alteredValuation[j] == 'e') {
+                        alteredValuation[j] = 'a';
+                    }
+                    j++;
+                }
+                cout << "1 " << alteredValuation << endl;
+                return; 
+            }
+        }
+    }
+
+    if (trueCount == 0) {
+        cout << "0" << endl;
+        return;
+    } else if(trueCount == 1){
+        alteredValuation = expression[index];
+        int i = 0; string result = "";
+        while(alteredValuation[i] != '\0'){
+            if(isDigit(alteredValuation[i])){
+                result += alteredValuation[i];
+            }
+            i++;
+        }
+        cout << "1 " << result << endl;
+    }
 }
 
 int main(int argc, char* argv[]){
@@ -229,6 +280,7 @@ int main(int argc, char* argv[]){
                 break;
             case 's':
                 satisfaction(tokens, valuation);
+                printPossibility(tokens, valuation);
                 break;
             default:
                 return 1;
