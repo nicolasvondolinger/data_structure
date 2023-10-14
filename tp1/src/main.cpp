@@ -71,7 +71,7 @@ void assignValues(string& tokens, string& valuation){
     tokens = result;
 }
 
-int evaluate(string tokens, string valuation){
+int evaluate(string tokens){
 
     Stack values;
     Stack operators;
@@ -157,7 +157,7 @@ int evaluate(string tokens, string valuation){
     return parseToInt(values.GetIten());
 }
 
-/*void assignValuesSatisfaction(string& tokens, string valuation, BinaryTree& tree){
+void assignValuesSatisfaction(string& tokens, string valuation, BinaryTree& tree, Node* p){
     string r = "", l = "";
     int i = 0; bool done = false;
     while(tokens[i] != '\0'){
@@ -174,9 +174,6 @@ int evaluate(string tokens, string valuation){
             } else if(isDigit(valuation[n])){
                 r += valuation[n];
                 l += valuation[n];
-            } else {
-                r += tokens[i];
-                l += tokens[i];
             }
         } else {
             r += tokens[i];
@@ -184,21 +181,38 @@ int evaluate(string tokens, string valuation){
         }
         i++;
     }
-    tree.InsertRight(r);
-    tree.InsertLeft(l);
-    //tokens = result;
-    if(!done){
-        assignValuesSatisfaction(tokens, valuation, tree);
+    if(done){
+        tree.InsertRight(p, r);
+        tree.InsertLeft(p, l);
     }
-}*/
+}
 
-/*int satisfaction(string tokens, string valuation){
-    
+void buildTree(string tokens, string valuation, BinaryTree& tree, Node* p){
+    if(p!= nullptr){
+        buildTree(tokens, valuation, tree, p->GetLeft());
+        assignValuesSatisfaction(tokens, valuation, tree, p);
+        buildTree(tokens, valuation, tree, p->GetRight());
+    }
+}
+
+void byLevel(string tokens, string valuation, BinaryTree& tree, Node* p){
+    if(p != nullptr){
+        cout << p->GetExpression() << endl;
+        byLevel(tokens, valuation, tree, p->GetLeft());
+        byLevel(tokens, valuation, tree, p->GetRight());
+    } else{
+        evaluate(p->GetExpression());
+    }
+}
+
+void satisfaction(string tokens, string valuation){
     BinaryTree tree;
     tree.SetRoot(tokens);
-    assignValuesSatisfaction(tokens, valuation, tree);
-    
-}*/
+    Node* p = tree.GetRoot();
+    assignValuesSatisfaction(tokens, valuation, tree, p);
+    buildTree(tokens, valuation, tree, p);
+    byLevel(tokens, valuation, tree, p);
+}
 
 int main(int argc, char* argv[]){
     int opt;
@@ -206,15 +220,15 @@ int main(int argc, char* argv[]){
     tokens = argv[2];
     valuation = argv[3];
 
-    while ((opt = getopt(argc, argv, "ae")) != -1) {
+    while ((opt = getopt(argc, argv, "as")) != -1) {
         switch (opt) {
             case 'a':
                 assignValues(tokens, valuation);
                 cout << tokens << endl;
-                cout << evaluate(tokens, valuation) << endl;
-                cout << "FUNFA" << endl;
+                cout << evaluate(tokens) << endl;
                 break;
-            case 'e':
+            case 's':
+                satisfaction(tokens, valuation);
                 break;
             default:
                 return 1;

@@ -21,21 +21,30 @@ INC = include
 BIN = bin
 OBJS = $(OBJ)/node.o $(OBJ)/stack.o $(OBJ)/binaryTree.o $(OBJ)/main.o
 HDRS = $(INC)/Node.h $(INC)/Stack.h $(INC)/BinaryTree.h $(INC)/msgassert.h 
-#OBJS = $(OBJ)/node.o $(OBJ)/stack.o  $(OBJ)/main.o
-#HDRS = $(INC)/Node.h $(INC)/Stack.h $(INC)/msgassert.h 
 CFLAGS = -g -Wall -c -I$(INC)
+VALGRIND = valgrind
+VALGRIND_FLAGS = --leak-check=full
 
 EXE = $(BIN)/main
+TESTS = test1 test2 test3 test4 test5
 
 all: $(EXE)
-#all:  mem perf gprof
 
 run: $(EXE)
 	$(EXE) -a "0 & 1" 10
 	$(EXE) -a "0 | 1 & 2" 010
 	$(EXE) -a "~ ( 0 & 1 ) & 2" 101
+	$(EXE) -a "~0 & 1 & 2" 011
 	$(EXE) -a "0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10" 00000000010
-	
+	$(EXE) -s "0 | 1 & 2" 0e0
+
+$(TESTS): $(EXE)
+	$(VALGRIND) $(VALGRIND_FLAGS) ./$(EXE) -a "0 & 1" 10
+	$(VALGRIND) $(VALGRIND_FLAGS) ./$(EXE) -a "0 | 1 & 2" 010
+	$(VALGRIND) $(VALGRIND_FLAGS) ./$(EXE) -a "~ ( 0 & 1 ) & 2" 101
+	$(VALGRIND) $(VALGRIND_FLAGS) ./$(EXE) -a "0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10" 00000000010
+	$(VALGRIND) $(VALGRIND_FLAGS) ./$(EXE) -s "0 | 1 & 2" 0e0
+
 clean:
 	rm -f $(EXE) $(OBJS) gmon.out
 
@@ -51,3 +60,4 @@ $(OBJ)/%.o: $(SRC)/%.cpp $(HDRS) | $(OBJ)
 $(OBJ):
 	mkdir -p $(OBJ)
 
+.PHONY: run $(TESTS)

@@ -24,33 +24,28 @@ Node* BinaryTree::GetRoot(){
 }
 
 void BinaryTree::SetRoot(string s){
+    if (root == nullptr) {
+        root = new Node();
+    }
     root->SetExpression(s);
 }
 
 void BinaryTree::InsertLeft(Node* node, string exp) {
     if (node == nullptr) {
-        return; 
+        return; // Se o nó for nulo, não podemos inserir à esquerda.
     }
-
-    if (node->GetLeft() == nullptr) {
         Node* newNode = new Node();
         newNode->SetExpression(exp);
         node->SetLeft(newNode);
-    } else {
-        InsertLeft(node->GetLeft(), exp);
-    }
 }
 
 void BinaryTree::InsertRight(Node* node, string exp) {
-    if (root == nullptr) {
-        root = new Node();
-        root->SetExpression(exp);
-    } else {
+    if (node == nullptr) {
+        return; // Se o nó for nulo, não podemos inserir à esquerda.
+    }
         Node* newNode = new Node();
         newNode->SetExpression(exp);
-        newNode->SetRight(root->GetRight());
-        root->SetRight(newNode);
-    }
+        node->SetRight(newNode);
 }
 
 void BinaryTree::PreOrder(Node* p) {
