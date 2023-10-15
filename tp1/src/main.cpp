@@ -12,7 +12,7 @@ using namespace std;
 const int MAX = 1000000;
 
 string tokens, valuation;
-int possibility [MAX]; string expression [MAX];
+int result [MAX]; string expression [MAX];
 int s = 0;
 
 int precedence(char op){
@@ -161,32 +161,15 @@ int evaluate(string tokens){
     return parseToInt(values.GetIten());
 }
 
-int assignValuesSatisfaction(string& tokens, string valuation, BinaryTree& tree, Node* p, int position){
-    string r = "", l = "";
+void assignValuesSatisfaction(string tokens, string valuation, BinaryTree& tree, Node* p){
+    string r = tokens, l = tokens;
     int i = 0; bool done = false;
-    while(i != position){
-        r = tokens[i]; l = tokens[i];
-        i++;
-    }
-    while(tokens[i] != '\0'){
-        if(isDigit(tokens[i])){
-            int n = tokens[i] - '0';
-            if(isDigit(tokens[i+1])){
-                n *= 10; n += (tokens[i+1] + '0');
-                i++;
-            }
-            if (!isDigit(valuation[n]) && !done){
-                done = true;
-                l += '1';
-                r += '0';
-                position = i;
-            } else if(isDigit(valuation[n])){
-                r += valuation[n];
-                l += valuation[n];
-            }
-        } else {
-            r += tokens[i];
-            l += tokens[i];
+    while(r[i] != '\0'){
+        if(r[i] == 'a' || r[i] == 'e'){
+            r[i] = '1';
+            l[i] = '0';
+            done = true;
+            break;
         }
         i++;
     }
@@ -194,76 +177,110 @@ int assignValuesSatisfaction(string& tokens, string valuation, BinaryTree& tree,
         tree.InsertRight(p, r);
         tree.InsertLeft(p, l);
     }
-    return position;
 }
 
 void buildTree(string tokens, string valuation, BinaryTree& tree, Node* p){
-    int position = 0;
-    if(p!= nullptr){
-        cout << p->GetExpression() << endl;
-        buildTree(tokens, valuation, tree, p->GetLeft());
-        buildTree(tokens, valuation, tree, p->GetRight());
-        position = assignValuesSatisfaction(tokens, valuation, tree, p, position);
+    if(p != nullptr){
+        assignValuesSatisfaction(p->GetExpression(), valuation, tree, p);
+        buildTree(p->GetExpression(), valuation, tree, p->GetLeft());
+        buildTree(p->GetExpression(), valuation, tree, p->GetRight());
     }
 }
 
-void byLevel(string tokens, BinaryTree& tree, Node* p){
+string removeNoDigits(string tokens){
+    string result = "";
+    for(char c : tokens){
+        if(isDigit(c)) result += c;
+    }
+    return result;
+}
+
+void byLevel(Node* p){
     if(p->GetRight() != nullptr){
-        byLevel(tokens, tree, p->GetLeft());
-        byLevel(tokens, tree, p->GetRight());
+        byLevel(p->GetLeft());
+        byLevel(p->GetRight());
     } else{
-        possibility[s] = evaluate(p->GetExpression());
-        expression[s] = p->GetExpression();
+        result[s] = evaluate(p->GetExpression());
+        expression[s] = removeNoDigits(p->GetExpression());
         s++;
     }
 }
 
+string changeTokens(string tokens, string valuation){
+    string result;
+    int i = 0;
+    while(tokens[i] != '\0'){
+        if(isDigit(tokens[i])){
+            int n = tokens[i] - '0';
+            if(isDigit(tokens[i+1])){
+                n *= 10;
+                n += parseToInt(tokens[i+1]);
+                i++;
+            }
+            result += valuation[n];
+        } else {
+            result += tokens[i];
+        }
+        i++;
+    }
+    return result;
+}
+
 void satisfaction(string tokens, string valuation){
     BinaryTree tree;
-    tree.SetRoot(tokens);
+    tree.SetRoot(changeTokens(tokens, valuation));
     Node* p = tree.GetRoot();
-    assignValuesSatisfaction(tokens, valuation, tree, p, 0);
     buildTree(tokens, valuation, tree, p);
-    byLevel(tokens, tree, p);
+    byLevel(p);
 }
 
-void printPossibility(string tokens, string valuation) {
-    int trueCount = 0;
-    string alteredValuation = valuation;
-    int index;
-    for (int i = 0; i < s; i++) {
-        if (possibility[i] == 1) {
-            trueCount++;
-            index = i;
-            if (trueCount == s) {
-                int j = 0;
-                while (alteredValuation[j] != '\0') {
-                    if (alteredValuation[j] == 'e') {
-                        alteredValuation[j] = 'a';
-                    }
-                    j++;
-                }
-                cout << "1 " << alteredValuation << endl;
-                return; 
-            }
+void printResult() {
+    bool exists = false;
+    bool all_true = true;
+    bool any_true = false;
+
+    for (int i = 0; i < tokens.size(); i++) {
+        if (valuation[i] == 'e' && result[i] == 1) {
+            exists = true;
+            break;
+        }
+        if (valuation[i] == 'a' && result[i] == 0) {
+            all_true = false;
+        }
+        if (valuation[i] == 'e' && result[i] == 1) {
+            any_true = true;
         }
     }
 
-    if (trueCount == 0) {
+    if (exists) {
+        cout << "1 ";
+        for (int i = 0; i < tokens.size(); i++) {
+            if (valuation[i] == 'e' && result[i] == 1) {
+                cout << expression[i];
+            }
+        }
+        cout << endl;
+    } else if (all_true) {
+        cout << "1 ";
+        for (int i = 0; i < tokens.size(); i++) {
+            if (valuation[i] == 'a') {
+                cout << expression[i];
+            }
+        }
+        cout << endl;
+    } else if (any_true) {
+        cout << "1 ";
+        for (int i = 0; i < tokens.size(); i++) {
+            if (valuation[i] == 'e' && result[i] == 1) {
+                cout << expression[i];
+            }
+        }
+        cout << endl;
+    } else {
         cout << "0" << endl;
-        return;
-    } else if(trueCount == 1){
-        alteredValuation = expression[index];
-        int i = 0; string result = "";
-        while(alteredValuation[i] != '\0'){
-            if(isDigit(alteredValuation[i])){
-                result += alteredValuation[i];
-            }
-            i++;
-        }
-        cout << "1 " << result << endl;
     }
 }
+
 
 int main(int argc, char* argv[]){
     int opt;
@@ -275,12 +292,11 @@ int main(int argc, char* argv[]){
         switch (opt) {
             case 'a':
                 assignValues(tokens, valuation);
-                cout << tokens << endl;
                 cout << evaluate(tokens) << endl;
                 break;
             case 's':
                 satisfaction(tokens, valuation);
-                printPossibility(tokens, valuation);
+                printResult();
                 break;
             default:
                 return 1;
