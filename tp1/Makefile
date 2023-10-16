@@ -5,7 +5,7 @@ OBJ = obj
 INC = include
 BIN = bin
 OBJS = $(OBJ)/node.o $(OBJ)/stack.o $(OBJ)/binaryTree.o $(OBJ)/main.o
-HDRS = $(INC)/Node.h $(INC)/Stack.h $(INC)/BinaryTree.h $(INC)/msgassert.h 
+HDRS = $(INC)/Node.h $(INC)/Stack.h $(INC)/BinaryTree.h $(INC)/msgassert.h
 CFLAGS = -g -Wall -c -I$(INC)
 VALGRIND = valgrind
 VALGRIND_FLAGS = --leak-check=full
@@ -22,6 +22,7 @@ $(OBJ)/%.o: $(SRC)/%.cpp $(HDRS)
 	$(CC) $(CFLAGS) -o $@ $<
 
 run: $(EXE)
+    # Adicione suas regras de execução aqui
 	$(EXE) -a "0 & 1" 10
 	$(EXE) -a "0 | ~ ~ 1" 01
 	$(EXE) -a "0 | 1 & 2" 010
@@ -38,7 +39,32 @@ run: $(EXE)
 	$(EXE) -a "~ ~ ~ ( ~ ( 0 & 1) | ( ~ ~ ~ 2) )" 010
 	$(EXE) -a "~ ~ ~ ( ~ ( 0 & 1) | ( ~ ~ ~ 2) )" 110
 	$(EXE) -a "~ ~ ~ ( ~ ( 0 & 1) | ( ~ ~ ~ 2) )" 111
-	
+	$(EXE) -s "0 | 1 & 2" e0e
+	$(EXE) -s "( 0 & 1 ) | ( ~ ( 2 & 3 ) )" aaaa
+    # Adicione outros comandos de execução aqui
+
+valgrind: $(EXE)
+	$(VALGRIND) $(VALGRIND_FLAGS) ./$(EXE) > saida_valgrind.txt
+    # Adicione seus testes de Valgrind aqui
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -a "0 & 1" 10 > saida_valgrind_test1.txt
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -a "0 | ~ ~ 1" 01 > saida_valgrind_test2.txt
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -a "0 | 1 & 2" 010 > saida_valgrind_test3.txt
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -a "~ ( 0 & 1 ) & 2" 101
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -a "~0 & 1 & 2" 011
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -a "0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10" 00000000001
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -s "0 | 1 & 2" 0e0
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -s "0 | 1 & 2" e00
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -s "0 | 1 & 2" e11
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -s "0 | 1 & 2" e1e
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -s "0 | 1 & 2 & 3" e1ee
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -s "(0 | 1 | 1 | 1 | 1 | 1 )" ea
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -s "0 | ~ ~ 1" ea
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -a "~ ~ ~ ( ~ ( 0 & 1) | ( ~ ~ ~ 2) )" 010
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -a "~ ~ ~ ( ~ ( 0 & 1) | ( ~ ~ ~ 2) )" 110
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -a "~ ~ ~ ( ~ ( 0 & 1) | ( ~ ~ ~ 2) )" 111
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -s "0 | 1 & 2" e0e
+	$(VALGRIND) $(VALGRIND_FLAGS) $(EXE) -s "( 0 & 1 ) | ( ~ ( 2 & 3 ) )" aaaa
+    # Adicione outros testes de Valgrind aqui
 
 clean:
 	rm -f $(EXE) $(OBJS) gmon.out

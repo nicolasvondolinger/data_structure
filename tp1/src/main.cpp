@@ -244,35 +244,58 @@ void satisfaction(string tokens, string valuation){
 
 //Função chamada para printar o resultado da satisfabilidade
 void printResult() {
-    int i = 0; string answer = "";
+    int i = 0; string answer = ""; int r = 0;
+    for(int num: result){
+        r += num;
+    }
     while(valuation[i] != '\0'){
         char c = valuation[i];
         if(c == '1' || c == '0'){
             answer += c;
-        } else if (c == 'e' || c == 'a'){
-            int j = 0; int d1 = 0, d0 = 0;
+        } else if (c == 'e'){
+            int j = 0, d0 = 0, d1 = 0;
             while(j < s){
                 string exp = expression[j];
+                if(exp[i] == '0' && result[j] == 1) d0++;
                 if(exp[i] == '1' && result[j] == 1) d1++;
-                else if(exp[i] == '0' && result[j] == 1) d0++;
                 j++;
             }
-            if (d0 >= 1 && d1 >= 1 && c == 'e') answer += 'a';
-            else if (d0 >= 1 && d1 >= 1 && c == 'a') {
-                string resp = "";
-                for(char q : valuation){
-                    if(q == 'e') resp += '1';
-                    else resp += q;
-                }
-                cout << "1 "<< resp << endl; return;
-            } else if (d0 >= 1) answer += '0';
+            if (d0 >= 1 && d1 >= 1) answer += 'a';
+            else if (d0 >= 1) answer += '0';
             else if (d1 >= 1) answer += '1';
+            else{
+                cout << 0 << endl;
+                return;
+            }
+        } else {
+            int j = 0, d0 = 0, d1 = 0;
+            while(j < s){
+                string exp = expression[j];
+                if(exp[i] == '0' && result[j] == 1) d0++;
+                if(exp[i] == '1' && result[j] == 1) d1++;
+                j++;
+            }
+            if(d0 >= 1 && d1 >= 1) answer+='a';
             else {
                 cout << 0 << endl;
                 return;
-            } 
+            }
         } 
         i++;
+    }
+    int soma = 0;
+    for(char i: answer){
+        if(i == '1') soma++;
+        if(i == 'a') soma+=2;
+    }
+    if(soma > r){
+        int j = 0;
+        while(answer[j] != '\0'){
+            if (answer[j] == 'a') {
+                answer[j] = '1';
+                break;
+            }
+        }
     }
     cout << "1 "<< answer << endl;
 }
