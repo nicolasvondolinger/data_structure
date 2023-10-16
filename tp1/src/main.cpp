@@ -6,15 +6,13 @@
 
 using namespace std;
 
-#define EVALUATE 1
-#define SATISFACTION 2
-
 const int MAX = 1000000;
 
-string tokens, valuation;
-int result [MAX]; string expression [MAX];
+string tokens, valuation; //Variáveis globais para facilitar o acesso
+int result [MAX]; string expression [MAX]; //Arrays globais que armazenam os resultados das folhas e a espressão que gerou tal resultado, respectivamente, no mesmo index
 int s = 0;
 
+//Retorna a precedencia de cada operador, de acordo com o seu peso em expressões lógicas
 int precedence(char op){
     switch (op){
         case '|':
@@ -28,6 +26,7 @@ int precedence(char op){
     }
 }
 
+//Retorna o valor resultante da operação passada como parametro das duas variaveis
 int applyOP(int a, int b, char op){
     if(a == 1 && b == 1 && op == '|') return a;
     switch(op){
@@ -39,6 +38,7 @@ int applyOP(int a, int b, char op){
     }
 }
 
+//Retorna o valor oposto ao respectivo char('1' se recebe '0' e vice-versa)
 char applyNeg(char a){
     switch(a){
         case '0': return '1';
@@ -47,14 +47,20 @@ char applyNeg(char a){
     }
 }
 
+//Verifica se o char passado como parametro seria considerado digito caso fosse do tipo int
 bool isDigit(char c){
     return (c >= '0' && c <= '9');
 }
 
-int parseToInt(char c){
-    return c - '0';
+//Passa o char recebido como parametro para o tipo int
+int parseToInt(char c) {
+    if (isDigit(c)) {
+        return c - '0';
+    }
+    throw std::invalid_argument("Caractere não é um dígito");
 }
 
+//Atribui o valor de cada posição de valuation a sua respectiva variável em tokens
 void assignValues(string& tokens, string& valuation){
     string result;
     int i = 0;
@@ -75,92 +81,88 @@ void assignValues(string& tokens, string& valuation){
     tokens = result;
 }
 
-int evaluate(string tokens){
-
+//Retorna o valor final resultante da expressao logica tokens
+int evaluate(string tokens) {
     Stack values;
     Stack operators;
 
-    for(char c: tokens){
-        if(c == ' ') continue;
-        else if (c == '~'){
+    for (char c : tokens) {
+        if (c == ' ') continue;
+        else if (c == '~') {
             operators.StackUp(c);
-        }
-        else if(c == '('){
+        } else if (c == '(') {
             operators.StackUp(c);
-        }
-        else if(isDigit(c)){
+        } else if (isdigit(c)) {
             values.StackUp(c);
-        }
-        else if(c == ')'){
-            while (operators.GetIten() != '(')
-            {
-                if(operators.GetIten() == '~'){
-                    values.StackUp(applyNeg(values.Unstack()));
+        } else if (c == ')') {
+            while (operators.GetIten() != '(') {
+                while (operators.GetIten() == '~') {
+                    char v = values.Unstack();
+                    values.StackUp(applyNeg(v));
                     operators.Unstack();
-                    break;
                 }
-                int val2 = parseToInt(values.GetIten());
-                values.Unstack();
 
-                int val1 = parseToInt(values.GetIten());
-                values.Unstack();
+                if (operators.GetIten() != '(') {
+                    int val2 = parseToInt(values.GetIten());
+                    values.Unstack();
 
-                char op = operators.GetIten();
-                operators.Unstack();
+                    int val1 = parseToInt(values.GetIten());
+                    values.Unstack();
 
-                values.StackUp(applyOP(val1, val2, op) + '0');
+                    char op = operators.GetIten();
+                    operators.Unstack();
 
+                    values.StackUp(applyOP(val1, val2, op) + '0');
+                }
             }
-            if(!operators.Empty()) operators.Unstack();
+            if (!operators.Empty()) operators.Unstack();
         }
-        else
-        {
-            while(!operators.Empty() && precedence(operators.GetIten()) >= precedence(c)){
-                
-                if(operators.GetIten() == '~') {
-                    values.StackUp(applyNeg(values.Unstack()));
+        else {
+            while (!operators.Empty() && precedence(operators.GetIten()) >= precedence(c)) {
+                if (operators.GetIten() == '~') {
+                    char v = values.Unstack();
+                    values.StackUp(applyNeg(v));
                     operators.Unstack();
-                    break;
+                }else{
+                    int val2 = parseToInt(values.GetIten());
+                    values.Unstack();
+
+                    int val1 = parseToInt(values.GetIten());
+                    values.Unstack();
+
+                    char op = operators.GetIten();
+                    operators.Unstack();
+
+                    values.StackUp(applyOP(val1, val2, op) + '0');
                 }
-                
-                int val2 = parseToInt(values.GetIten());
-                values.Unstack();
-
-                int val1 = parseToInt(values.GetIten());
-                values.Unstack();
-
-                char op = operators.GetIten();
-                operators.Unstack();
-
-                values.StackUp(applyOP(val1, val2, op) + '0');
             }
             operators.StackUp(c);
         }
     }
 
-    while(!operators.Empty()){
-
-        if(operators.GetIten() == '~') {
-            values.StackUp(applyNeg(values.Unstack()));
+    while (!operators.Empty()) {
+        if (operators.GetIten() == '~') {
+            char v = values.Unstack();
+            values.StackUp(applyNeg(v));
             operators.Unstack();
-            break;
+        } else{
+            int val2 = parseToInt(values.GetIten());
+            values.Unstack();
+
+            int val1 = parseToInt(values.GetIten());
+            values.Unstack();
+
+            char op = operators.GetIten();
+            operators.Unstack();
+
+            values.StackUp(applyOP(val1, val2, op) + '0');
         }
-
-        int val2 = parseToInt(values.GetIten());
-        values.Unstack();
-
-        int val1 = parseToInt(values.GetIten());
-        values.Unstack();
-
-        char op = operators.GetIten();
-        operators.Unstack();
-        
-        values.StackUp(applyOP(val1, val2, op) + '0');
     }
 
     return parseToInt(values.GetIten());
 }
 
+//Cria as strings dos nós filhos da direita e da esquerda, se for necessário, e caso seja, insere o resultado em cada um
 void assignValuesSatisfaction(string tokens, string valuation, BinaryTree& tree, Node* p){
     string r = tokens, l = tokens;
     int i = 0; bool done = false;
@@ -179,6 +181,7 @@ void assignValuesSatisfaction(string tokens, string valuation, BinaryTree& tree,
     }
 }
 
+//Constroi a arvore recursivamente até que não seja necessário criar novos filhos
 void buildTree(string tokens, string valuation, BinaryTree& tree, Node* p){
     if(p != nullptr){
         assignValuesSatisfaction(p->GetExpression(), valuation, tree, p);
@@ -187,6 +190,7 @@ void buildTree(string tokens, string valuation, BinaryTree& tree, Node* p){
     }
 }
 
+//Retorna uma nova string basesada em tokens, mas sem caracteres que não sejam digitos
 string removeNoDigits(string tokens){
     string result = "";
     for(char c : tokens){
@@ -195,6 +199,7 @@ string removeNoDigits(string tokens){
     return result;
 }
 
+//Calcula o resultado de cada uma das folhas das arvores, armazena o resultado em result e a expressao sem os caracteres que não são digitos em expression 
 void byLevel(Node* p){
     if(p->GetRight() != nullptr){
         byLevel(p->GetLeft());
@@ -202,10 +207,12 @@ void byLevel(Node* p){
     } else{
         result[s] = evaluate(p->GetExpression());
         expression[s] = removeNoDigits(p->GetExpression());
+        //cout << expression[s] << " : " << result[s] << endl;
         s++;
     }
 }
 
+//Retorna a expressão tokens valorada com os valores de valuation 
 string changeTokens(string tokens, string valuation){
     string result;
     int i = 0;
@@ -226,6 +233,7 @@ string changeTokens(string tokens, string valuation){
     return result;
 }
 
+//Função chamada para executar a satisfabilidade
 void satisfaction(string tokens, string valuation){
     BinaryTree tree;
     tree.SetRoot(changeTokens(tokens, valuation));
@@ -234,53 +242,40 @@ void satisfaction(string tokens, string valuation){
     byLevel(p);
 }
 
+//Função chamada para printar o resultado da satisfabilidade
 void printResult() {
-    bool exists = false;
-    bool all_true = true;
-    bool any_true = false;
-
-    for (int i = 0; i < tokens.size(); i++) {
-        if (valuation[i] == 'e' && result[i] == 1) {
-            exists = true;
-            break;
-        }
-        if (valuation[i] == 'a' && result[i] == 0) {
-            all_true = false;
-        }
-        if (valuation[i] == 'e' && result[i] == 1) {
-            any_true = true;
-        }
+    int i = 0; string answer = "";
+    while(valuation[i] != '\0'){
+        char c = valuation[i];
+        if(c == '1' || c == '0'){
+            answer += c;
+        } else if (c == 'e' || c == 'a'){
+            int j = 0; int d1 = 0, d0 = 0;
+            while(j < s){
+                string exp = expression[j];
+                if(exp[i] == '1' && result[j] == 1) d1++;
+                else if(exp[i] == '0' && result[j] == 1) d0++;
+                j++;
+            }
+            if (d0 >= 1 && d1 >= 1 && c == 'e') answer += 'a';
+            else if (d0 >= 1 && d1 >= 1 && c == 'a') {
+                string resp = "";
+                for(char q : valuation){
+                    if(q == 'e') resp += '1';
+                    else resp += q;
+                }
+                cout << "1 "<< resp << endl; return;
+            } else if (d0 >= 1) answer += '0';
+            else if (d1 >= 1) answer += '1';
+            else {
+                cout << 0 << endl;
+                return;
+            } 
+        } 
+        i++;
     }
-
-    if (exists) {
-        cout << "1 ";
-        for (int i = 0; i < tokens.size(); i++) {
-            if (valuation[i] == 'e' && result[i] == 1) {
-                cout << expression[i];
-            }
-        }
-        cout << endl;
-    } else if (all_true) {
-        cout << "1 ";
-        for (int i = 0; i < tokens.size(); i++) {
-            if (valuation[i] == 'a') {
-                cout << expression[i];
-            }
-        }
-        cout << endl;
-    } else if (any_true) {
-        cout << "1 ";
-        for (int i = 0; i < tokens.size(); i++) {
-            if (valuation[i] == 'e' && result[i] == 1) {
-                cout << expression[i];
-            }
-        }
-        cout << endl;
-    } else {
-        cout << "0" << endl;
-    }
+    cout << "1 "<< answer << endl;
 }
-
 
 int main(int argc, char* argv[]){
     int opt;
@@ -291,12 +286,22 @@ int main(int argc, char* argv[]){
     while ((opt = getopt(argc, argv, "as")) != -1) {
         switch (opt) {
             case 'a':
-                assignValues(tokens, valuation);
-                cout << evaluate(tokens) << endl;
+                try {
+                    assignValues(tokens, valuation);
+                    cout << evaluate(tokens) << endl;
+                } catch (const std::exception &e) {
+                    cerr << "Erro ao calcular: " << e.what() << endl;
+                    return 1;
+                }
                 break;
             case 's':
-                satisfaction(tokens, valuation);
-                printResult();
+                try {
+                    satisfaction(tokens, valuation);
+                    printResult();
+                } catch (const std::exception &e) {
+                    cerr << "Erro ao calcular a satisfabilidade: " << e.what() << endl;
+                    return 1;
+                }
                 break;
             default:
                 return 1;

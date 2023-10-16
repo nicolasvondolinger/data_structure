@@ -1,25 +1,25 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <iostream>
+#include <stdexcept> // Incluído para lançar exceções
 
 #include "Stack.h"
 
 using namespace std;
 
-//Implementação da Pilha
+// Implementação da Pilha
 
-Stack::Stack(/* args */)
-{
+Stack::Stack() {
     top = nullptr;
     length = 0;
 }
 
-Stack::~Stack()
-{
+Stack::~Stack() {
     Clean();
 }
 
-void Stack::StackUp(char c){
+// Empilha um caractere na pilha
+void Stack::StackUp(char c) {
     Node* n = new Node();
 
     n->SetIten(c);
@@ -28,13 +28,13 @@ void Stack::StackUp(char c){
     length++;
 }
 
-char Stack::Unstack(){
+// Desempilha um caractere da pilha e retorna o caractere desempilhado
+char Stack::Unstack() {
     char aux;
     Node *p;
 
-    if(length == 0 || top == nullptr){ // Adicione a verificação de top
-        cout << "VAZIA" << endl;
-        throw "The Stack is Empty!";
+    if (length == 0 || top == nullptr) {
+        throw std::runtime_error("A pilha está vazia. Não é possível desempilhar.");
     }
 
     aux = top->GetIten();
@@ -46,29 +46,37 @@ char Stack::Unstack(){
     return aux;
 }
 
-
-void Stack::Clean(){
-    while (!Empty()){
+// Remove todos os elementos da pilha
+void Stack::Clean() {
+    while (!Empty()) {
         Unstack();
     }
 }
 
-void Stack::SetTop(Node* node){
+// Define o topo da pilha para um nó específico
+void Stack::SetTop(Node* node) {
     top = node;
 }
 
-Node* Stack::GetTop(){
+// Retorna o nó no topo da pilha
+Node* Stack::GetTop() {
     return top;
 }
 
-char Stack::GetIten(){
+// Obtém o caractere no topo da pilha
+char Stack::GetIten() {
+    if (top == nullptr) {
+        throw std::runtime_error("A pilha está vazia. Não é possível obter um item.");
+    }
     return top->GetIten();
 }
 
-int Stack::GetLength(){
+// Retorna o número de elementos na pilha
+int Stack::GetLength() {
     return length;
 }
 
-bool Stack::Empty(){
+// Verifica se a pilha está vazia
+bool Stack::Empty() {
     return length == 0;
 }
