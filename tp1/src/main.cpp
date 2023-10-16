@@ -6,13 +6,15 @@
 
 using namespace std;
 
+#define EVALUATE 1
+#define SATISFACTION 2
+
 const int MAX = 1000000;
 
-string tokens, valuation; //Variáveis globais para facilitar o acesso
-int result [MAX]; string expression [MAX]; //Arrays globais que armazenam os resultados das folhas e a espressão que gerou tal resultado, respectivamente, no mesmo index
+string tokens, valuation;
+int result [MAX]; string expression [MAX];
 int s = 0;
 
-//Retorna a precedencia de cada operador, de acordo com o seu peso em expressões lógicas
 int precedence(char op){
     switch (op){
         case '|':
@@ -26,7 +28,6 @@ int precedence(char op){
     }
 }
 
-//Retorna o valor resultante da operação passada como parametro das duas variaveis
 int applyOP(int a, int b, char op){
     if(a == 1 && b == 1 && op == '|') return a;
     switch(op){
@@ -38,7 +39,6 @@ int applyOP(int a, int b, char op){
     }
 }
 
-//Retorna o valor oposto ao respectivo char('1' se recebe '0' e vice-versa)
 char applyNeg(char a){
     switch(a){
         case '0': return '1';
@@ -47,20 +47,14 @@ char applyNeg(char a){
     }
 }
 
-//Verifica se o char passado como parametro seria considerado digito caso fosse do tipo int
 bool isDigit(char c){
     return (c >= '0' && c <= '9');
 }
 
-//Passa o char recebido como parametro para o tipo int
-int parseToInt(char c) {
-    if (isDigit(c)) {
-        return c - '0';
-    }
-    throw std::invalid_argument("Caractere não é um dígito");
+int parseToInt(char c){
+    return c - '0';
 }
 
-//Atribui o valor de cada posição de valuation a sua respectiva variável em tokens
 void assignValues(string& tokens, string& valuation){
     string result;
     int i = 0;
@@ -81,7 +75,6 @@ void assignValues(string& tokens, string& valuation){
     tokens = result;
 }
 
-//Retorna o valor final resultante da expressao logica tokens
 int evaluate(string tokens) {
     Stack values;
     Stack operators;
@@ -162,7 +155,7 @@ int evaluate(string tokens) {
     return parseToInt(values.GetIten());
 }
 
-//Cria as strings dos nós filhos da direita e da esquerda, se for necessário, e caso seja, insere o resultado em cada um
+
 void assignValuesSatisfaction(string tokens, string valuation, BinaryTree& tree, Node* p){
     string r = tokens, l = tokens;
     int i = 0; bool done = false;
@@ -181,7 +174,6 @@ void assignValuesSatisfaction(string tokens, string valuation, BinaryTree& tree,
     }
 }
 
-//Constroi a arvore recursivamente até que não seja necessário criar novos filhos
 void buildTree(string tokens, string valuation, BinaryTree& tree, Node* p){
     if(p != nullptr){
         assignValuesSatisfaction(p->GetExpression(), valuation, tree, p);
@@ -190,7 +182,6 @@ void buildTree(string tokens, string valuation, BinaryTree& tree, Node* p){
     }
 }
 
-//Retorna uma nova string basesada em tokens, mas sem caracteres que não sejam digitos
 string removeNoDigits(string tokens){
     string result = "";
     for(char c : tokens){
@@ -199,7 +190,6 @@ string removeNoDigits(string tokens){
     return result;
 }
 
-//Calcula o resultado de cada uma das folhas das arvores, armazena o resultado em result e a expressao sem os caracteres que não são digitos em expression 
 void byLevel(Node* p){
     if(p->GetRight() != nullptr){
         byLevel(p->GetLeft());
@@ -207,12 +197,11 @@ void byLevel(Node* p){
     } else{
         result[s] = evaluate(p->GetExpression());
         expression[s] = removeNoDigits(p->GetExpression());
-        //cout << expression[s] << " : " << result[s] << endl;
+        //cout << expression[s] << endl;
         s++;
     }
 }
 
-//Retorna a expressão tokens valorada com os valores de valuation 
 string changeTokens(string tokens, string valuation){
     string result;
     int i = 0;
@@ -233,7 +222,6 @@ string changeTokens(string tokens, string valuation){
     return result;
 }
 
-//Função chamada para executar a satisfabilidade
 void satisfaction(string tokens, string valuation){
     BinaryTree tree;
     tree.SetRoot(changeTokens(tokens, valuation));
@@ -242,63 +230,43 @@ void satisfaction(string tokens, string valuation){
     byLevel(p);
 }
 
-//Função chamada para printar o resultado da satisfabilidade
+/*string tokens, valuation;
+int result [MAX]; string expression [MAX];*/
 void printResult() {
-    int i = 0; string answer = ""; int r = 0;
-    for(int num: result){
-        r += num;
-    }
+    int i = 0; string answer = "";
     while(valuation[i] != '\0'){
         char c = valuation[i];
         if(c == '1' || c == '0'){
             answer += c;
         } else if (c == 'e'){
-            int j = 0, d0 = 0, d1 = 0;
+            int j = 0; int d1 = 0, d0 = 0;
             while(j < s){
                 string exp = expression[j];
-                if(exp[i] == '0' && result[j] == 1) d0++;
                 if(exp[i] == '1' && result[j] == 1) d1++;
+                else if(exp[i] == '0' && result[j] == 1) d0++;
                 j++;
             }
             if (d0 >= 1 && d1 >= 1) answer += 'a';
             else if (d0 >= 1) answer += '0';
             else if (d1 >= 1) answer += '1';
-            else{
-                cout << 0 << endl;
-                return;
-            }
-        } else {
-            int j = 0, d0 = 0, d1 = 0;
-            while(j < s){
-                string exp = expression[j];
-                if(exp[i] == '0' && result[j] == 1) d0++;
-                if(exp[i] == '1' && result[j] == 1) d1++;
-                j++;
-            }
-            if(d0 >= 1 && d1 >= 1) answer+='a';
             else {
                 cout << 0 << endl;
                 return;
             }
-        } 
-        i++;
-    }
-    int soma = 0;
-    for(char i: answer){
-        if(i == '1') soma++;
-        if(i == 'a') soma+=2;
-    }
-    if(soma > r){
-        int j = 0;
-        while(answer[j] != '\0'){
-            if (answer[j] == 'a') {
-                answer[j] = '1';
-                break;
+        } else if (c == 'a'){
+            int j = 0;
+            while(j < s){
+                if(result[j] != 1) {
+                    cout << 0 << endl; return;
+                }
+                j++;
             }
         }
+        i++;
     }
     cout << "1 "<< answer << endl;
 }
+
 
 int main(int argc, char* argv[]){
     int opt;
@@ -309,22 +277,12 @@ int main(int argc, char* argv[]){
     while ((opt = getopt(argc, argv, "as")) != -1) {
         switch (opt) {
             case 'a':
-                try {
-                    assignValues(tokens, valuation);
-                    cout << evaluate(tokens) << endl;
-                } catch (const std::exception &e) {
-                    cerr << "Erro ao calcular: " << e.what() << endl;
-                    return 1;
-                }
+                assignValues(tokens, valuation);
+                cout << evaluate(tokens) << endl;
                 break;
             case 's':
-                try {
-                    satisfaction(tokens, valuation);
-                    printResult();
-                } catch (const std::exception &e) {
-                    cerr << "Erro ao calcular a satisfabilidade: " << e.what() << endl;
-                    return 1;
-                }
+                satisfaction(tokens, valuation);
+                printResult();
                 break;
             default:
                 return 1;
