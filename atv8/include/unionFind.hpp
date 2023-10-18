@@ -26,5 +26,4 @@ class UnionFind{
         Subconjunto* subconjuntos;
 };
 
-
 #endif
