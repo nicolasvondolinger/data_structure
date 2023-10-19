@@ -1,10 +1,11 @@
 #include <iostream>
 #include "heap.hpp"
+#include "unionFind.hpp"
 
 using namespace std;
 
 Heap::Heap(int maxsize){
-    data = new int[maxsize];
+    data = new Aresta[maxsize];
     tamanho = 0;
 }
 
@@ -12,12 +13,12 @@ Heap::~Heap(){
     delete[] data;
 }
 
-void Heap::Inserir(int x) {
+void Heap::Inserir(Aresta x) {
     data[tamanho] = x;
     int posicao = tamanho;
     int pai = GetAncestral(posicao);
-    while (posicao > 0 && data[posicao] < data[pai]) {
-        int aux = data[posicao];
+    while (posicao > 0 && data[posicao].custo < data[pai].custo) {
+        Aresta aux = data[posicao];
         data[posicao] = data[pai];
         data[pai] = aux;
         posicao = pai;
@@ -27,8 +28,8 @@ void Heap::Inserir(int x) {
 }
 
 
-int Heap::Remover() {
-    int root = data[0];
+Aresta Heap::Remover() {
+    Aresta root = data[0];
     data[0] = data[tamanho - 1];
     tamanho--;
     int i = 0;
@@ -37,10 +38,10 @@ int Heap::Remover() {
         int dir = GetSucessorDir(i);
         int menor = i;
 
-        if (esq < tamanho && data[esq] < data[menor]) {
+        if (esq < tamanho && data[esq].custo < data[menor].custo) {
             menor = esq;
         }
-        if (dir < tamanho && data[dir] < data[menor]) {
+        if (dir < tamanho && data[dir].custo < data[menor].custo) {
             menor = dir;
         }
 
@@ -49,7 +50,7 @@ int Heap::Remover() {
         }
 
         // Trocar o elemento atual com o menor dos filhos.
-        int aux = data[i];
+        Aresta aux = data[i];
         data[i] = data[menor];
         data[menor] = aux;
 
