@@ -13,7 +13,6 @@ typedef struct s_subset{
 } Subconjunto;
 
 class UnionFind{
-
     public:
         UnionFind(int quantidade_subconjuntos);
         ~UnionFind();
