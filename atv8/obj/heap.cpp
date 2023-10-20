@@ -1,6 +1,6 @@
 #include <iostream>
-#include "heap.hpp"
-#include "unionFind.hpp"
+#include "../include/heap.hpp"
+#include "../include/unionFind.hpp"
 
 using namespace std;
 

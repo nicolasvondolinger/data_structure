@@ -8,8 +8,8 @@ class Heap{
         Heap(int maxsize);
         ~Heap();
 
-        void Inserir(int x);
-        int Remover();
+        void Inserir(Aresta x);
+        Aresta Remover();
 
         bool Vazio();
 
@@ -19,7 +19,7 @@ class Heap{
         int GetSucessorDir(int posicao);
 
         int tamanho;
-        int* data;
+        Aresta* data;
 
         
         void HeapifyPorBaixo(int posicao);
