@@ -12,24 +12,21 @@ void printArray(int *arr, int n) {
     cout << endl;
 }
 
+void swap(int *arr, int position){
+    int aux = arr[position];
+    arr[position] = arr[position + 1];
+    arr[position + 1] = aux;
+}
+
 void bubbleSort(int *vertices, int *weigth, int *connection, int n) {
     bool swapped;
     for (int i = 0; i < n - 1; i++) {
         swapped = false;
         for (int j = 0; j < n - i - 1; j++) {
             if (weigth[j] > weigth[j + 1]) {
-                int aux = weigth[j];
-                weigth[j] = weigth[j + 1];
-                weigth[j + 1] = aux;
-
-                aux = vertices[j];
-                vertices[j] = vertices[j + 1];
-                vertices[j + 1] = aux;
-
-                aux = connection[j];
-                connection[j] = connection[j + 1];
-                connection[j + 1] = aux;
-
+                swap(weigth, j);
+                swap(vertices, j);
+                swap(connection, j);
                 swapped = true;
             }
         }
@@ -40,33 +37,32 @@ void bubbleSort(int *vertices, int *weigth, int *connection, int n) {
 void colorCheck(int **grafo, int *vertices, int *weigth, int *connection, int n) {
     for (int i = 0; i < n; i++) {
         int v = vertices[i], p = weigth[i], count = weigth[i];
-        for (int j = 0; j < connection[v]; j++) {
-            int u = grafo[v][j];
+        for (int j = 0; j < connection[i]; j++) {
             int k;
             for (k = 0; k < n; k++) {
-                if (vertices[k] == u) {
+                if (vertices[k] == grafo[v][j]) {
                     break;
                 }
             }
             if (weigth[k] < p) {
                 count--;
-                cout << v << " passou" << endl;
-            }         
+            }    
         }
         if (count > 1) {
-            cout << v << ':' << i << ':' << count << endl;
+            cout << 0 << endl;
             break;
         } else if (i+1 == n) printArray(vertices, n);
     }
 }
 
 int main() {
-    char op; int n;
-    cin >> op >> n;
+    char op; int n; cin >> op >> n;
+
     int **grafo = new int *[n];
     int *vertices = new int[n];
     int *weigth = new int[n];
     int *connection = new int[n];
+
     for (int i = 0; i < n; i++) {
         int j; cin >> j;
         connection[i] = j; grafo[i] = new int[j];
@@ -78,17 +74,16 @@ int main() {
     }
 
     for (int i = 0; i < n; i++) {
-        int p;
-        cin >> p;
+        int p; cin >> p;
         weigth[i] = p;
     }
 
     switch (op) {
         case 'b':
             bubbleSort(vertices, weigth, connection, n);
-            printArray(vertices, n);
-            printArray(weigth, n);
-            printArray(connection, n);
+            //cout << "vertices: "; printArray(vertices, n);
+            //cout << "weigth: "; printArray(weigth, n);
+            //cout << "connection: "; printArray(connection, n);
             colorCheck(grafo, vertices, weigth, connection, n);
             break;
         default:
@@ -96,7 +91,6 @@ int main() {
             break;
     }
 
-    // Libere a memória alocada
     for (int i = 0; i < n; i++) {
         delete[] grafo[i];
     }
