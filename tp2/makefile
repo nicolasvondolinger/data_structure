@@ -5,8 +5,8 @@ OBJ = obj
 INC = include
 BIN = bin
 
-OBJS = $(OBJ)/main.o
-#HDRS = $(INC)/heap.hpp $(INC)/unionFind.hpp
+OBJS = $(OBJ)/main.o #$(OBJ)/listaAdjacencia.o $(OBJ)/node.o  
+#HDRS = $(INC)/listaAdjacencia.hpp $(INC)/node.hpp
 CFLAGS = -g -Wall -c -I$(INC)
 
 EXE = $(BIN)/tp2.out 
