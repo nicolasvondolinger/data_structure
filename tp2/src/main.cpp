@@ -34,21 +34,35 @@ void bubbleSort(int *vertices, int *weigth, int *connection, int n) {
     }
 }
 
+void setFalse(bool * arr, int n){
+    for(int i = 0; i < n; i++){
+        arr[i] = false;
+    }
+}
+
+bool conditionCheck(bool * arr, int n){
+    for(int i = 0; i < n; i++){
+        if(!arr[i]) return false;
+    }
+    return true;
+}
+
 void colorCheck(int **grafo, int *vertices, int *weigth, int *connection, int n) {
     for (int i = 0; i < n; i++) {
-        int v = vertices[i], p = weigth[i], count = weigth[i];
+        int v = vertices[i], p = weigth[i]; bool verifier[p - 1];
+        setFalse(verifier, p - 1);
         for (int j = 0; j < connection[i]; j++) {
             int k;
-            for (k = 0; k < n; k++) {
+            for(k = 0; k < n; k++) {
                 if (vertices[k] == grafo[v][j]) {
                     break;
                 }
             }
             if (weigth[k] < p) {
-                count--;
+                verifier[weigth[k] - 1] = true;
             }    
         }
-        if (count > 1) {
+        if (!conditionCheck(verifier, p - 1)) {
             cout << 0 << endl;
             break;
         } else if (i+1 == n) printArray(vertices, n);
