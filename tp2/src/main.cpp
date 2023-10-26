@@ -5,8 +5,6 @@
 
 using namespace std;
 
-const int MAX = 1000000;
-
 void printArray(int *arr, int n) {
     cout << 1 << ' ';
     for (int i = 0; i < n; i++) {
@@ -41,7 +39,7 @@ void selectionSort(int *vertices, int *weigth, int *connection, int n) {
     for (int i = 0; i < n - 1; i++) {
         int min_idx = i;
         for (int j = i + 1; j < n; j++) {
-            if (vertices[j] < vertices[min_idx]) min_idx = j;
+            if (weigth[j] < weigth[min_idx]) min_idx = j;
         }
         if (min_idx != i) {
             swap(vertices, min_idx, i);
@@ -53,22 +51,90 @@ void selectionSort(int *vertices, int *weigth, int *connection, int n) {
 
 void insertionSort(int *vertices, int *weigth, int *connection, int n) {
     for (int i = 1; i < n; i++) {
-        int key = vertices[i];
+        int keyWeigth = weigth[i];
+        int keyVertices = vertices[i];
+        int keyConnection = connection[i];
         int j = i - 1;
 
-        while (j >= 0 && vertices[j] > key) {
-            vertices[j + 1] = vertices[j];
-            weigth[j + 1] = weigth[j];
-            connection[j + 1] = connection[j + 1];
+        while (j >= 0 && weigth[j] > keyWeigth) {
+            swap(vertices, j, j+1);
+            swap(weigth, j, j+1);
+            swap(connection, j, j+1);
             j--;
         }
-        vertices[j + 1] = key;
+        weigth[j+1] = keyWeigth;
+        vertices[j+1] = keyVertices;
+        connection[j+1] = keyConnection;
     }
 }
 
-void setFalse(bool *arr, int n) {
-    for (int i = 0; i < n; i++) {
-        arr[i] = false;
+void quickSort(int *vertices, int *weigth, int *connection, int n){
+
+}
+
+void mergeSort(int *vertices, int *weigth, int *connection, int n){
+
+}
+
+void heapify(int *vertices, int *weigth, int *connection, int n, int i){
+    int largest = i;
+    int l = 2 * i + 1;
+    int r = 2 * i + 2;
+    if(l < n && weigth[l] > weigth[largest]) largest = l;
+    if(r < n && weigth[r] > weigth[largest]) largest = r;
+    if(largest != i){
+        swap(vertices, i, largest);
+        swap(weigth, i, largest);
+        swap(connection, i, largest);
+
+        heapify(vertices, weigth, connection, n, largest);
+    }
+}
+
+void heapSort(int *vertices, int *weigth, int *connection, int n){
+    for(int i = (n/2) - 1; i >= 0; i--) heapify(vertices, weigth, connection, n, i);
+
+    for(int i = n -1; i> 0; i--){
+        swap(vertices, 0, i);
+        swap(weigth, 0, i);
+        swap(connection, 0, i);
+
+        heapify(vertices, weigth, connection, i, 0);
+    }
+}
+
+int getMax(int * arr, int n){
+    int max = arr[0];
+    for(int i = 1; i < n; i++)if(arr[i] > max){
+        max = arr[i];
+    }
+    return max;
+}
+
+void mySort(int *vertices, int *weigth, int *connection, int n) {
+    int max = getMax(weigth, n);
+
+    int outputWeigth[n], outputVertices[n], outputConnection[n];
+    int count[n]; 
+
+    for (int i = 0; i < 10; i++) count[i] = 0; 
+
+    for (int i = 1; max / i > 0; i *= 10) {
+        for (int j = 0; j < n; j++)
+            count[(weigth[j] / i) % 10]++;
+        for (int j = 1; j < n; j++)
+            count[j] += count[j - 1];
+        for (int j = n - 1; j >= 0; j--) {
+            outputWeigth[count[(weigth[j] / i) % 10] - 1] = weigth[j];
+            outputVertices[count[(weigth[j] / i) % 10] - 1] = vertices[j];
+            outputConnection[count[(weigth[j] / i) % 10] - 1] = connection[j];
+            count[(weigth[j] / i) % 10]--;
+        }
+        for (int j = 0; j < n; j++){
+            weigth[j] = outputWeigth[j];
+            connection[j] = outputConnection[j];
+            vertices[j] = outputVertices[j];
+        }
     }
 }
 
@@ -83,7 +149,7 @@ void colorCheck(int **grafo, int *vertices, int *weigth, int *connection, int n)
     for (int i = 0; i < n; i++) {
         int v = vertices[i], p = weigth[i];
         bool verifier[p - 1];
-        setFalse(verifier, p - 1);
+        
         for (int j = 0; j < connection[i]; j++) {
             int k;
             for (k = 0; k < n; k++) {
@@ -106,9 +172,7 @@ int main() {
 
     auto start = chrono::high_resolution_clock::now();
 
-    char op;
-    int n;
-    cin >> op >> n;
+    char op; int n; cin >> op >> n;
 
     int **grafo = new int *[n];
     int *vertices = new int[n];
@@ -134,7 +198,6 @@ int main() {
         weigth[i] = p;
     }
 
-
     switch (op) {
         case 'b':
             bubbleSort(vertices, weigth, connection, n);
@@ -155,20 +218,22 @@ int main() {
             cout << "mergesort";
             break;
         case 'p':
-            cout << "heap";
+            heapSort(vertices, weigth, connection, n);
+            colorCheck(grafo, vertices, weigth, connection, n);
             break;
         case 'y':
-            cout << "your";
+            mySort(vertices, weigth, connection, n);
+            colorCheck(grafo, vertices, weigth, connection, n);
             break;
         default:
-            cout << "ERROR";
+            cout << "Opção inválida. Por favor, escolha uma opção válida: 'b' (Bubble Sort), 's' (Selection Sort), 'i' (Insertion Sort), 'q' (Quick Sort), 'm' (Merge Sort), 'p' (Heap Sort), ou 'y' (Seu Algoritmo)." << endl;
             break;
     }
 
     auto stop = chrono::high_resolution_clock::now();
     auto duration = chrono::duration_cast<chrono::milliseconds>(stop - start);
 
-    cout << "Tempo: " << duration.count() << " ms" << endl;
+    //cout << "Tempo: " << duration.count() << " ms" << endl;
 
     for (int i = 0; i < n; i++) {
         delete[] grafo[i];
