@@ -1,6 +1,5 @@
 #include <iostream>
 #include <fstream>
-#include <string>
 #include <chrono>
 
 using namespace std;
@@ -68,12 +67,59 @@ void insertionSort(int *vertices, int *weigth, int *connection, int n) {
     }
 }
 
-void quickSort(int *vertices, int *weigth, int *connection, int n){
+int partition(int *vertices, int *weigth, int *connection, int n, int low, int high){
+    int pivot = weigth[high];
+    int i = low - 1;
 
+    for(int j = low; j <= high; j++){
+        if(weigth[j] < pivot){
+            i++;
+            swap(weigth, i, j);
+            swap(vertices, i, j);
+            swap(connection, i, j);
+        }
+    }
+    swap(weigth, i+1, high);
+    swap(connection, i+1, high);
+    swap(vertices, i+1, high);
+    return i+1;
 }
 
-void mergeSort(int *vertices, int *weigth, int *connection, int n){
+void quickSort(int *vertices, int *weigth, int *connection, int n, int low, int high){
+    if(low < high){
+        int pi = partition(vertices, weigth, connection, n, low, high);
+        quickSort(vertices, weigth, connection, n, low, pi -1);
+        quickSort(vertices, weigth, connection, n, pi+1, high);
 
+    }
+}
+
+void merge(int *vertices, int *weigth, int *connection, int const left, int const mid, int const right){
+    int const subArrayOne = mid - left + 1;
+    int const subArrayTwo = right - mid;
+
+    auto *leftArray = new int[subArrayOne], *rightArray = new int[subArrayTwo];
+
+    for(auto i = 0; i < subArrayOne; i++){
+        leftArray[i] = weigth[left + 1];
+    }
+    for(auto j = 0; j < subArrayTwo; j++){
+        rightArray[j] = weigth[mid + 1 + j];
+    }
+
+    auto indexOfSubArrayOne = 0, indexOfSubArrayTwo = 0;
+    int indexOfMergedArray = left;
+
+    
+}
+
+void mergeSort(int *vertices, int *weigth, int *connection, int end, int begin){
+    if(begin >= end) return;
+
+    int mid = begin + (end - begin) / 2;
+    mergeSort(vertices, weigth, connection, mid, begin);
+    mergeSort(vertices, weigth, connection, end, mid + 1);
+    merge(vertices, weigth, connection, begin, mid, end);
 }
 
 void heapify(int *vertices, int *weigth, int *connection, int n, int i){
@@ -212,10 +258,13 @@ int main() {
             colorCheck(grafo, vertices, weigth, connection, n);
             break;
         case 'q':
-            cout << "quick";
+            quickSort(vertices, weigth, connection, n, 0, n-1);
+            colorCheck(grafo, vertices, weigth, connection, n);
             break;
         case 'm':
-            cout << "mergesort";
+            mergeSort(vertices, weigth, connection, n - 1, 0);
+            printArray(weigth, n);
+            //colorCheck(grafo, vertices, weigth, connection, n);
             break;
         case 'p':
             heapSort(vertices, weigth, connection, n);
