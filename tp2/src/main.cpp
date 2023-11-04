@@ -4,6 +4,12 @@
 
 using namespace std;
 
+void verify(int * vertices, int * weigth, int * connection, int n){
+    cout << "vertices: "; printArray(vertices, n);
+    cout << "weigth: "; printArray(weigth, n);
+    cout << "connection: "; printArray(connection, n);
+}
+
 int main() {
 
     char op; int n; cin >> op >> n;
@@ -36,9 +42,6 @@ int main() {
         case 'b':
             bubbleSort(vertices, weigth, connection, n);
             colorCheck(grafo, vertices, weigth, connection, n);
-            cout << "weigth: "; printArray(weigth, n);
-            cout << "vertices: "; printArray(vertices, n);
-            cout << "connection: "; printArray(connection, n);
             break;
         case 's':
             selectionSort(vertices, weigth, connection, n);
@@ -51,9 +54,6 @@ int main() {
         case 'q':
             quickSort(vertices, weigth, connection, 0, n-1);
             colorCheck(grafo, vertices, weigth, connection, n);
-            cout << "weigth: "; printArray(weigth, n);
-            cout << "vertices: "; printArray(vertices, n);
-            cout << "connection: "; printArray(connection, n);
             break;
         case 'm':
             mergeSort(vertices, weigth, connection, 0, n -1);

@@ -33,19 +33,22 @@ void bubbleSort(int *vertices, int *weigth, int *connection, int n) {
     }
 }
 
-void selectionSort(int *vertices, int *weigth, int *connection, int n) {
+void selectionSort(int *vertices, int *weight, int *connection, int n) {
     for (int i = 0; i < n - 1; i++) {
         int min_idx = i;
         for (int j = i + 1; j < n; j++) {
-            if (weigth[j] < weigth[min_idx]) min_idx = j;
+            if (weight[j] < weight[min_idx] || (weight[j] == weight[min_idx] && vertices[j] < vertices[min_idx])) {
+                min_idx = j;
+            }
         }
         if (min_idx != i) {
             swap(vertices, min_idx, i);
-            swap(weigth, min_idx, i);
+            swap(weight, min_idx, i);
             swap(connection, min_idx, i);
         }
     }
 }
+
 
 void insertionSort(int *vertices, int *weigth, int *connection, int n) {
     for (int i = 1; i < n; i++) {
@@ -71,7 +74,7 @@ int partition(int *vertices, int *weigth, int *connection, int low, int high){
     int i = low - 1;
 
     for(int j = low; j <= high; j++){
-        if(weigth[j] < pivot){
+        if(weigth[j] < pivot || (weigth[j] == pivot && vertices[j] < vertices[high])){
             i++;
             swap(weigth, i, j);
             swap(vertices, i, j);
@@ -87,10 +90,11 @@ int partition(int *vertices, int *weigth, int *connection, int low, int high){
 void quickSort(int *vertices, int *weigth, int *connection, int low, int high){
     if(low < high){
         int pi = partition(vertices, weigth, connection, low, high);
-        quickSort(vertices, weigth, connection, low, pi -1);
-        quickSort(vertices, weigth, connection, pi+1, high);
+        quickSort(vertices, weigth, connection, low, pi - 1);
+        quickSort(vertices, weigth, connection, pi + 1, high);
     }
 }
+
 
 void merge(int *vertices, int *weight, int *connection, int const left, int const mid, int const right) {
     int const subArrayOne = mid - left + 1;
@@ -151,13 +155,20 @@ void mergeSort(int *vertices, int *weight, int *connection, int begin, int end) 
     merge(vertices, weight, connection, begin, mid, end);
 }
 
-void heapify(int *vertices, int *weigth, int *connection, int n, int i){
+void heapify(int *vertices, int *weigth, int *connection, int n, int i) {
     int largest = i;
     int l = 2 * i + 1;
     int r = 2 * i + 2;
-    if(l < n && weigth[l] > weigth[largest]) largest = l;
-    if(r < n && weigth[r] > weigth[largest]) largest = r;
-    if(largest != i){
+
+    if (l < n && (weigth[l] > weigth[largest] || (weigth[l] == weigth[largest] && vertices[l] > vertices[largest]))) {
+        largest = l;
+    }
+
+    if (r < n && (weigth[r] > weigth[largest] || (weigth[r] == weigth[largest] && vertices[r] > vertices[largest]))) {
+        largest = r;
+    }
+
+    if (largest != i) {
         swap(vertices, i, largest);
         swap(weigth, i, largest);
         swap(connection, i, largest);
@@ -166,10 +177,12 @@ void heapify(int *vertices, int *weigth, int *connection, int n, int i){
     }
 }
 
-void heapSort(int *vertices, int *weigth, int *connection, int n){
-    for(int i = (n/2) - 1; i >= 0; i--) heapify(vertices, weigth, connection, n, i);
+void heapSort(int *vertices, int *weigth, int *connection, int n) {
+    for (int i = (n / 2) - 1; i >= 0; i--) {
+        heapify(vertices, weigth, connection, n, i);
+    }
 
-    for(int i = n -1; i> 0; i--){
+    for (int i = n - 1; i > 0; i--) {
         swap(vertices, 0, i);
         swap(weigth, 0, i);
         swap(connection, 0, i);
@@ -178,38 +191,19 @@ void heapSort(int *vertices, int *weigth, int *connection, int n){
     }
 }
 
-int getMax(int * arr, int n){
-    int max = arr[0];
-    for(int i = 1; i < n; i++)if(arr[i] > max){
-        max = arr[i];
-    }
-    return max;
-}
-
 void mySort(int *vertices, int *weigth, int *connection, int n) {
-    int max = getMax(weigth, n);
-
-    int outputWeigth[n], outputVertices[n], outputConnection[n];
-    int count[n]; 
-
-    for (int i = 0; i < 10; i++) count[i] = 0; 
-
-    for (int i = 1; max / i > 0; i *= 10) {
-        for (int j = 0; j < n; j++)
-            count[(weigth[j] / i) % 10]++;
-        for (int j = 1; j < n; j++)
-            count[j] += count[j - 1];
-        for (int j = n - 1; j >= 0; j--) {
-            outputWeigth[count[(weigth[j] / i) % 10] - 1] = weigth[j];
-            outputVertices[count[(weigth[j] / i) % 10] - 1] = vertices[j];
-            outputConnection[count[(weigth[j] / i) % 10] - 1] = connection[j];
-            count[(weigth[j] / i) % 10]--;
+    int s = 0, b = 0, l = 0, r = n - 1;
+    bool * aux = new bool[n];
+    for (int j = 0; j <= n/2; j++){
+        for (int i = l + 1; i <= r; i++){
+            if(weigth[i] > weigth[b] && !aux[i]) b = i;
+            if(weigth[i] < weigth[s] && !aux[i]) s = i;
         }
-        for (int j = 0; j < n; j++){
-            weigth[j] = outputWeigth[j];
-            connection[j] = outputConnection[j];
-            vertices[j] = outputVertices[j];
-        }
+        swap(vertices, l, s); swap(vertices, r, b);
+        swap(weigth, l, s); swap(weigth, r, b);
+        swap(connection, l, s); swap(connection, r, b);
+        aux[s] = true; aux[b] = true;
+        l++; r--; s = l, b = r;
     }
 }
 
@@ -223,7 +217,7 @@ bool conditionCheck(bool *arr, int n) {
 void colorCheck(int **grafo, int *vertices, int *weigth, int *connection, int n) {
     for (int i = 0; i < n; i++) {
         int v = vertices[i], p = weigth[i];
-        bool verifier[p - 1];
+        bool *verifier = new bool[p];
         
         for (int j = 0; j < connection[i]; j++) {
             int k;
@@ -232,13 +226,16 @@ void colorCheck(int **grafo, int *vertices, int *weigth, int *connection, int n)
                     break;
                 }
             }
-            if (weigth[k] < p) {
+            if (weigth[k] < p){
                 verifier[weigth[k] - 1] = true;
             }
         }
         if (!conditionCheck(verifier, p - 1)) {
-            cout << 0 << endl;
-            break;
-        } else if (i + 1 == n) printArray(vertices, n);
+            cout << 0 << endl; return;
+        }
     }
+    if (n != 0)
+        printArray(vertices, n);
+    else
+        cout << 0 << endl;
 }
