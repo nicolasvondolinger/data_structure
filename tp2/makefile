@@ -5,13 +5,23 @@ OBJ = obj
 INC = include
 BIN = bin
 
-OBJS = $(OBJ)/main.o $(OBJ)/sortMethods.o 
-HDRS = $(INC)/sortMethods.hpp 
-CFLAGS = -g -Wall -c -I$(INC)
+OBJS = $(OBJ)/main.o $(OBJ)/sortMethods.o $(OBJ)/memlog.o
+HDRS = $(INC)/sortMethods.hpp $(INC)/memlog.hpp $(INC)/msgassert.hpp
+CFLAGS = -g -Wall -c -I$(INC) -pg
 
 EXE = $(BIN)/tp2.out 
 
-all: $(EXE)
+all: mem perf gprof
+
+mem: $(EXE)
+	$(EXE)
+
+perf: $(EXE)
+	$(EXE)
+
+gprof: $(EXE)
+	$(EXE)
+	gprof $(EXE) gmon.out > /tmp/greedy.txt
 
 clean:
 	rm -f $(EXE) $(OBJS) gmon.out

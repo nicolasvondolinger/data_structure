@@ -1,14 +1,9 @@
 #include <iostream>
 
 #include "../include/sortMethods.hpp"
+#include "../include/memlog.hpp"
 
 using namespace std;
-
-void verify(int * vertices, int * weigth, int * connection, int n){
-    cout << "vertices: "; printArray(vertices, n);
-    cout << "weigth: "; printArray(weigth, n);
-    cout << "connection: "; printArray(connection, n);
-}
 
 int main() {
 
@@ -20,8 +15,7 @@ int main() {
     int *connection = new int[n];
 
     for (int i = 0; i < n; i++) {
-        int j;
-        cin >> j;
+        int j; cin >> j;
         connection[i] = j;
         grafo[i] = new int[j];
         for (int k = 0; k < j; k++) {
@@ -33,37 +27,52 @@ int main() {
     }
 
     for (int i = 0; i < n; i++) {
-        int p;
-        cin >> p;
+        int p; cin >> p;
         weigth[i] = p;
     }
 
+    char lognome[100] = "/tmp/greedy.out";
+    int regmem = 1;
+
+    iniciaMemLog(lognome);
+
+    if(regmem) ativaMemLog();
+    else desativaMemLog();
+
+    defineFaseMemLog(0);
     switch (op) {
         case 'b':
+            defineFaseMemLog(1);
             bubbleSort(vertices, weigth, connection, n);
             colorCheck(grafo, vertices, weigth, connection, n);
             break;
         case 's':
+            defineFaseMemLog(1);
             selectionSort(vertices, weigth, connection, n);
             colorCheck(grafo, vertices, weigth, connection, n);
             break;
         case 'i':
+            defineFaseMemLog(1);
             insertionSort(vertices, weigth, connection, n);
             colorCheck(grafo, vertices, weigth, connection, n);
             break;
         case 'q':
+            defineFaseMemLog(1);
             quickSort(vertices, weigth, connection, 0, n-1);
             colorCheck(grafo, vertices, weigth, connection, n);
             break;
         case 'm':
+            defineFaseMemLog(1);
             mergeSort(vertices, weigth, connection, 0, n -1);
             colorCheck(grafo, vertices, weigth, connection, n);
             break;
         case 'p':
+            defineFaseMemLog(1);
             heapSort(vertices, weigth, connection, n);
             colorCheck(grafo, vertices, weigth, connection, n);
             break;
         case 'y':
+            defineFaseMemLog(1);
             mySort(vertices, weigth, connection, n);
             colorCheck(grafo, vertices, weigth, connection, n);
             break;
@@ -75,10 +84,7 @@ int main() {
     for (int i = 0; i < n; i++) {
         delete[] grafo[i];
     }
-    delete[] grafo;
-    delete[] vertices;
-    delete[] weigth;
-    delete[] connection;
+    delete[] grafo; delete[] vertices; delete[] weigth; delete[] connection;
 
     return 0;
 }
