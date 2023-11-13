@@ -23,12 +23,8 @@ void bubbleSort(int *vertices, int *weigth, int *connection, int n) {
     for (int i = 0; i < n - 1; i++) {
         swapped = false;
         for (int j = 0; j < n - i - 1; j++) {
-            LEMEMLOG((long int)(&(weigth[j])), sizeof(double), weigth[j]);
-            LEMEMLOG((long int)(&(weigth[j+ 1])), sizeof(double), weigth[j + 1]);
             if (weigth[j] > weigth[j + 1]) {
                 swap(vertices, j, j + 1);
-                ESCREVEMEMLOG((long int)(&(weigth[j])), sizeof(double), weigth[j]);
-                ESCREVEMEMLOG((long int)(&(weigth[j+1])), sizeof(double), weigth[j+1]);
                 swap(weigth, j, j + 1);
                 swap(connection, j, j + 1);
                 swapped = true;
@@ -42,8 +38,6 @@ void selectionSort(int *vertices, int *weigth, int *connection, int n) {
     for (int i = 0; i < n - 1; i++) {
         int min_idx = i;
         for (int j = i + 1; j < n; j++) {
-            LEMEMLOG((long int)(&(weigth[j])), sizeof(double), weigth[j]);
-            LEMEMLOG((long int)(&(weigth[min_idx])), sizeof(double), weigth[min_idx]);
             if (weigth[j] < weigth[min_idx] || (weigth[j] == weigth[min_idx] && vertices[j] < vertices[min_idx])) {
                 min_idx = j;
             }
@@ -51,8 +45,6 @@ void selectionSort(int *vertices, int *weigth, int *connection, int n) {
         if (min_idx != i) {
             swap(vertices, min_idx, i);
             swap(weigth, min_idx, i);
-            ESCREVEMEMLOG((long int)(&(weigth[i])), sizeof(double), weigth[i]);
-            ESCREVEMEMLOG((long int)(&(weigth[min_idx])), sizeof(double), weigth[min_idx]);
             swap(connection, min_idx, i);
         }
     }
@@ -66,14 +58,9 @@ void insertionSort(int *vertices, int *weigth, int *connection, int n) {
         int keyConnection = connection[i];
         int j = i - 1;
         
-        LEMEMLOG((long int)(&(weigth[i])), sizeof(double), weigth[i]);
-        LEMEMLOG((long int)(&(weigth[j])), sizeof(double), weigth[j]);
-
         while (j >= 0 && weigth[j] > keyWeigth) {
             swap(vertices, j, j+1);
             swap(weigth, j, j+1);
-            ESCREVEMEMLOG((long int)(&(weigth[j])), sizeof(double), weigth[j]);
-            ESCREVEMEMLOG((long int)(&(weigth[j+1])), sizeof(double), weigth[j+1]);
             swap(connection, j, j+1);
             j--;
         }
@@ -88,13 +75,9 @@ int partition(int *vertices, int *weigth, int *connection, int low, int high){
     int i = low - 1;
 
     for(int j = low; j <= high; j++){
-        LEMEMLOG((long int)(&(weigth[j])), sizeof(double), weigth[j]);
-        LEMEMLOG((long int)(&(weigth[j])), sizeof(double), weigth[j]);
         if(weigth[j] < pivot || (weigth[j] == pivot && vertices[j] < vertices[high])){
             i++;
             swap(weigth, i, j);
-            ESCREVEMEMLOG((long int)(&(weigth[i])), sizeof(double), weigth[j]);
-            ESCREVEMEMLOG((long int)(&(weigth[i])), sizeof(double), weigth[j]);
             swap(vertices, i, j);
             swap(connection, i, j);
         }
@@ -124,13 +107,11 @@ void merge(int *vertices, int *weigth, int *connection, int const left, int cons
 
     for (auto i = 0; i < subArrayOne; i++) {
         leftArrayWeigth[i] = weigth[left + i];
-        LEMEMLOG((long int)(&(weigth[left + i])), sizeof(double), weigth[left + i]);
         leftArrayVertice[i] = vertices[left + i];
         leftArrayConnection[i] = connection[left + i];
     }
     for (auto j = 0; j < subArrayTwo; j++) {
         rightArrayWeigth[j] = weigth[mid + 1 + j];
-        LEMEMLOG((long int)(&(weigth[mid + 1 + j])), sizeof(double), weigth[mid + 1 + j]);
         rightArrayVertice[j] = vertices[mid + 1 + j];
         rightArrayConnection[j] = connection[mid + 1 + j];
     }
@@ -141,13 +122,11 @@ void merge(int *vertices, int *weigth, int *connection, int const left, int cons
     while (indexOfSubArrayOne < subArrayOne && indexOfSubArrayTwo < subArrayTwo) {
         if (leftArrayWeigth[indexOfSubArrayOne] <= rightArrayWeigth[indexOfSubArrayTwo]) {
             weigth[indexOfMergedArray] = leftArrayWeigth[indexOfSubArrayOne];
-            LEMEMLOG((long int)(&(leftArrayWeigth[indexOfSubArrayOne])), sizeof(double), leftArrayWeigth[indexOfSubArrayOne]);
             vertices[indexOfMergedArray] = leftArrayVertice[indexOfSubArrayOne];
             connection[indexOfMergedArray] = leftArrayConnection[indexOfSubArrayOne];
             indexOfSubArrayOne++;
         } else {
             weigth[indexOfMergedArray] = rightArrayWeigth[indexOfSubArrayTwo];
-            LEMEMLOG((long int)(&(rightArrayWeigth[indexOfSubArrayTwo])), sizeof(double), rightArrayWeigth[indexOfSubArrayTwo]);
             vertices[indexOfMergedArray] = rightArrayVertice[indexOfSubArrayTwo];
             connection[indexOfMergedArray] = rightArrayConnection[indexOfSubArrayTwo];
             indexOfSubArrayTwo++;
@@ -157,7 +136,6 @@ void merge(int *vertices, int *weigth, int *connection, int const left, int cons
 
     while (indexOfSubArrayOne < subArrayOne) {
         weigth[indexOfMergedArray] = leftArrayWeigth[indexOfSubArrayOne];
-        LEMEMLOG((long int)(&(leftArrayWeigth[indexOfSubArrayOne])), sizeof(double), leftArrayWeigth[indexOfSubArrayOne]);
         vertices[indexOfMergedArray] = leftArrayVertice[indexOfSubArrayOne];
         connection[indexOfMergedArray] = leftArrayConnection[indexOfSubArrayOne];
         indexOfSubArrayOne++;
@@ -171,7 +149,6 @@ void merge(int *vertices, int *weigth, int *connection, int const left, int cons
 
 void mergeSort(int *vertices, int *weight, int *connection, int begin, int end) {
     if (begin >= end) return;
-
     int mid = begin + (end - begin) / 2;
     mergeSort(vertices, weight, connection, begin, mid);
     mergeSort(vertices, weight, connection, mid + 1, end);
@@ -182,26 +159,16 @@ void heapify(int *vertices, int *weigth, int *connection, int n, int i) {
     int largest = i;
     int l = 2 * i + 1;
     int r = 2 * i + 2;
-
     if (l < n && (weigth[l] > weigth[largest] || (weigth[l] == weigth[largest] && vertices[l] > vertices[largest]))) {
         largest = l;
-        LEMEMLOG((long int)(&(weigth[l])), sizeof(double), weigth[l]);
-        LEMEMLOG((long int)(&(weigth[largest])), sizeof(double), weigth[largest]);
     }
-
     if (r < n && (weigth[r] > weigth[largest] || (weigth[r] == weigth[largest] && vertices[r] > vertices[largest]))) {
         largest = r;
-        LEMEMLOG((long int)(&(weigth[r])), sizeof(double), weigth[r]);
-        LEMEMLOG((long int)(&(weigth[largest])), sizeof(double), weigth[largest]);
     }
-
     if (largest != i) {
         swap(vertices, i, largest);
         swap(weigth, i, largest);
-        ESCREVEMEMLOG((long int)(&(weigth[i])), sizeof(double), weigth[i]);
-        ESCREVEMEMLOG((long int)(&(weigth[largest])), sizeof(double), weigth[largest]);
         swap(connection, i, largest);
-
         heapify(vertices, weigth, connection, n, largest);
     }
 }
@@ -210,14 +177,10 @@ void heapSort(int *vertices, int *weigth, int *connection, int n) {
     for (int i = (n / 2) - 1; i >= 0; i--) {
         heapify(vertices, weigth, connection, n, i);
     }
-
     for (int i = n - 1; i > 0; i--) {
         swap(vertices, 0, i);
         swap(weigth, 0, i);
-        ESCREVEMEMLOG((long int)(&(weigth[0])), sizeof(double), weigth[0]);
-        ESCREVEMEMLOG((long int)(&(weigth[i])), sizeof(double), weigth[i]);
         swap(connection, 0, i);
-
         heapify(vertices, weigth, connection, i, 0);
     }
 }
@@ -227,19 +190,27 @@ void mySort(int *vertices, int *weigth, int *connection, int n) {
     bool * aux = new bool[n];
     for (int j = 0; j <= n/2; j++){
         for (int i = l + 1; i <= r; i++){
-            if(weigth[i] > weigth[b] && !aux[i]) b = i;
-            if(weigth[i] < weigth[s] && !aux[i]) s = i;
-            LEMEMLOG((long int)(&(weigth[i])), sizeof(double), weigth[i]);
-            LEMEMLOG((long int)(&(weigth[b])), sizeof(double), weigth[b]);
+            LEMEMLOG((long int)(&(vertices[i])), sizeof(double), vertices[i]);
+            LEMEMLOG((long int)(&(vertices[b])), sizeof(double), vertices[b]);
+            LEMEMLOG((long int)(&(vertices[s])), sizeof(double), vertices[s]);
+            if(weigth[i] > weigth[b] && !aux[i]){
+                b = i;
+            } else if(weigth[i] < weigth[s] && !aux[i]) {
+                s = i;
+            }
         }
-        swap(vertices, l, s); swap(vertices, r, b);
-        swap(weigth, l, s); swap(weigth, r, b);
-        ESCREVEMEMLOG((long int)(&(weigth[s])), sizeof(double), weigth[s]);
-        ESCREVEMEMLOG((long int)(&(weigth[l])), sizeof(double), weigth[l]);
+        swap(vertices, l, s);swap(vertices, r, b);
+        swap(weigth, l, s); 
+        ESCREVEMEMLOG((long int)(&(vertices[s])), sizeof(double), vertices[s]);
+        ESCREVEMEMLOG((long int)(&(vertices[l])), sizeof(double), vertices[l]);
+        swap(weigth, r, b);
+        ESCREVEMEMLOG((long int)(&(weigth[b])), sizeof(double), weigth[b]);
+        ESCREVEMEMLOG((long int)(&(weigth[r])), sizeof(double), weigth[r]);
         swap(connection, l, s); swap(connection, r, b);
         aux[s] = true; aux[b] = true;
         l++; r--; s = l, b = r;
     }
+    delete[] aux;
 }
 
 bool conditionCheck(bool *arr, int n) {
@@ -260,16 +231,17 @@ void colorCheck(int **grafo, int *vertices, int *weigth, int *connection, int n)
                 if (vertices[k] == grafo[v][j]) {
                     break;
                 }
-                LEMEMLOG((long int)(&(vertices[k])), sizeof(double), vertices[k]);
             }
-            LEMEMLOG((long int)(&(grafo[v][j])), sizeof(double), grafo[v][j]);
             if (weigth[k] < p){
                 verifier[weigth[k] - 1] = true;
             }
         }
         if (!conditionCheck(verifier, p - 1)) {
-            cout << 0 << endl; return;
+            cout << 0 << endl; 
+            //delete[] verifier;
+            return;
         }
+        delete[] verifier;
     }
     if (n != 0)
         printArray(vertices, n);

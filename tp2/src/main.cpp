@@ -42,37 +42,37 @@ int main() {
     defineFaseMemLog(0);
     switch (op) {
         case 'b':
-            defineFaseMemLog(1);
+            defineFaseMemLog(0);
             bubbleSort(vertices, weigth, connection, n);
             colorCheck(grafo, vertices, weigth, connection, n);
             break;
         case 's':
-            defineFaseMemLog(1);
+            defineFaseMemLog(0);
             selectionSort(vertices, weigth, connection, n);
             colorCheck(grafo, vertices, weigth, connection, n);
             break;
         case 'i':
-            defineFaseMemLog(1);
+            defineFaseMemLog(0);
             insertionSort(vertices, weigth, connection, n);
             colorCheck(grafo, vertices, weigth, connection, n);
             break;
         case 'q':
-            defineFaseMemLog(1);
+            defineFaseMemLog(0);
             quickSort(vertices, weigth, connection, 0, n-1);
             colorCheck(grafo, vertices, weigth, connection, n);
             break;
         case 'm':
-            defineFaseMemLog(1);
+            defineFaseMemLog(0);
             mergeSort(vertices, weigth, connection, 0, n -1);
             colorCheck(grafo, vertices, weigth, connection, n);
             break;
         case 'p':
-            defineFaseMemLog(1);
+            defineFaseMemLog(0);
             heapSort(vertices, weigth, connection, n);
             colorCheck(grafo, vertices, weigth, connection, n);
             break;
         case 'y':
-            defineFaseMemLog(1);
+            defineFaseMemLog(0);
             mySort(vertices, weigth, connection, n);
             colorCheck(grafo, vertices, weigth, connection, n);
             break;

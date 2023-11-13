@@ -8,26 +8,30 @@ BIN = bin
 OBJS = $(OBJ)/main.o $(OBJ)/sortMethods.o $(OBJ)/memlog.o
 HDRS = $(INC)/sortMethods.hpp $(INC)/memlog.hpp $(INC)/msgassert.hpp
 CFLAGS = -g -Wall -c -I$(INC) -pg
+LDFLAGS = -pg
 
 EXE = $(BIN)/tp2.out 
 
-all: mem perf gprof
+all: mem perf gprof cachegrind
 
 mem: $(EXE)
-	$(EXE)
+	valgrind --tool=memcheck --leak-check=full ./$(EXE)
 
 perf: $(EXE)
-	$(EXE)
+	./$(EXE)
 
 gprof: $(EXE)
-	$(EXE)
+	./$(EXE)
 	gprof $(EXE) gmon.out > /tmp/greedy.txt
 
+cachegrind: $(EXE)
+	valgrind --tool=cachegrind ./$(EXE)
+
 clean:
-	rm -f $(EXE) $(OBJS) gmon.out
+	rm -f $(EXE) $(OBJS) gmon.out cachegrind.out.*
 
 $(EXE): $(OBJS) | $(BIN)
-	$(CC) $(OBJS) -o $(EXE) $(LIBS)
+	$(CC) $(OBJS) -o $(EXE) $(LIBS) $(LDFLAGS)
 
 $(BIN):
 	mkdir -p $(BIN)
