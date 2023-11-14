@@ -1,4 +1,4 @@
-CC = g++
+CC = gcc
 LIBS = -lm
 SRC = src
 OBJ = obj
@@ -8,7 +8,7 @@ BIN = bin
 OBJS = $(OBJ)/evalenum.o
 CFLAGS = -g -Wall -c -I$(INC)
 
-EXE = $(BIN)/pa9.out  # Nome do executável corrigido
+EXE = $(BIN)/pa9.out
 
 all: $(EXE)
 
@@ -21,7 +21,7 @@ $(EXE): $(OBJS) | $(BIN)
 $(BIN):
 	mkdir -p $(BIN)
 
-$(OBJ)/%.o: $(SRC)/%.cpp $(HDRS) | $(OBJ)
+$(OBJ)/%.o: $(SRC)/%.c | $(OBJ)
 	$(CC) $(CFLAGS) $< -o $@
 
 $(OBJ):

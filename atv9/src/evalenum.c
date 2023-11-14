@@ -138,13 +138,41 @@ void swap(int *xp, int *yp, sortperf_t *s){
 }
 
 // heapsort
-void heapify(int * A, int l, int r, sortperf_t *s){
+void heapify(int *A, int n, int i, sortperf_t *s) {
+    int largest = i;
+    int left = 2 * i + 1;
+    int right = 2 * i + 2;
+
+    inccalls(s, 1);
+    inccmp(s, 1);
+    if (left < n && A[left] > A[largest]) {
+        largest = left;
+    }
+
+    inccmp(s, 1);
+    if (right < n && A[right] > A[largest]) {
+        largest = right;
+    }
+
+    if (largest != i) {
+        swap(&A[i], &A[largest], s);
+        heapify(A, n, largest, s);
+    }
 }
 
-void buildheap(int *A, int n, sortperf_t * s) {
+void buildheap(int *A, int n, sortperf_t *s) {
+    for (int i = n / 2 - 1; i >= 0; i--) {
+        heapify(A, n, i, s);
+    }
 }
 
-void heapSort(int *A, int n, sortperf_t * s) {
+void heapSort(int *A, int n, sortperf_t *s) {
+    buildheap(A, n, s);
+
+    for (int i = n - 1; i > 0; i--) {
+        swap(&A[0], &A[i], s);
+        heapify(A, i, 0, s);
+    }
 }
 
 
@@ -158,7 +186,7 @@ void recursiveSelectionSort(int arr[], int l, int r, sortperf_t * s)
     for (int j = l + 1; j <= r; j++)
     {
         // if `arr[j]` is less, then it is the new minimum
-	inccmp(s,1);
+	      inccmp(s,1);
         if (arr[j] < arr[min]) {
             min = j;    // update the index of minimum element
         }
@@ -174,13 +202,39 @@ void recursiveSelectionSort(int arr[], int l, int r, sortperf_t * s)
 }
 
 // selection sort
-void selectionSort(int arr[], int l, int r, sortperf_t * s) { 
-  return;
+void selectionSort(int arr[], int l, int r, sortperf_t *s) {
+    int i, j, min_idx;
+    inccalls(s, 1);
+    for (i = l; i < r; i++) {
+        min_idx = i;
+        
+        for (j = i + 1; j <= r; j++) {
+            inccmp(s, 1);
+            if (arr[j] < arr[min_idx])
+                min_idx = j;
+        }
+        if(min_idx != i) swap(&arr[min_idx], &arr[i], s);
+    }
 }
 
 //insertion sort
-void insertionSort(int v[], int l, int r, sortperf_t * s) {
-  return;
+void insertionSort(int v[], int l, int r, sortperf_t *s) {
+    int i, key, j;
+    inccalls(s, 1);
+    for (i = 1; i <= r; i++) {
+        key = v[i];
+        j = i - 1;
+
+        inccmp(s, 1);
+        while (j >= 0 && key < v[j]) {
+            inccmp(s, 1);
+            v[j + 1] = v[j];
+            j = j - 1;
+            incmove(s, 1);
+        }
+        v[j + 1] = key;
+        incmove(s, 2);
+    }
 }
 
 // median of 3 integers
@@ -194,27 +248,98 @@ int median (int a, int b, int c) {
 }
 
 // quicksort partition using median of 3
-void partition3(int * A, int l, int r, int *i, int *j, sortperf_t *s) {
+void partition3(int *A, int l, int r, int *i, int *j, sortperf_t *s) {
+    int pivot = median(A[l], A[(l + r) / 2], A[r]);
+    *i = l - 1;
+    *j = r + 1;
+    inccalls(s, 1);
+    while (1) {
+        do {
+            (*i)++;
+            inccmp(s, 1);
+        } while (A[*i] < pivot);
+
+        do {
+            (*j)--;
+            inccmp(s, 1);
+        } while (A[*j] > pivot);
+
+        if (*i >= *j)
+            return;
+
+        swap(&A[*i], &A[*j], s);
+    }
 }
 
 // standard quicksort partition
-void partition(int * A, int l, int r, int *i, int *j, sortperf_t *s) {
+int partition(int *A, int l, int r, sortperf_t *s) {
+    int pivot = A[r];
+    int i = l - 1;
+
+    for (int j = l; j <= r - 1; j++) {
+        inccmp(s, 1);
+        if (A[j] < pivot) {
+            i++;
+            swap(&A[i], &A[j], s);
+        }
+    }
+
+    swap(&A[i + 1], &A[r], s);
+    return i + 1;
 }
 
 // standard quicksort
-void quickSort(int * A, int l, int r, sortperf_t *s) { 
+void quickSort(int *A, int l, int r, sortperf_t *s) {
+    if (l < r) {
+        inccalls(s, 2);
+        inccmp(s, 1);
+        int pi = partition(A, l, r, s);
+        quickSort(A, l, pi - 1, s);
+        quickSort(A, pi + 1, r, s);
+    }
 }
 
+
 // quicksort with median of 3
-void quickSort3(int * A, int l, int r, sortperf_t *s) { 
+void quickSort3(int *A, int l, int r, sortperf_t *s) {
+    inccalls(s, 1);
+    if (l < r) {
+        inccmp(s, 1);
+        int i, j;
+        partition3(A, l, r, &i, &j, s);
+        quickSort3(A, l, j, s);
+        quickSort3(A, j + 1, r, s);
+    }
 }
 
 // quicksort with insertion for small partitions
-void quickSortIns(int * A, int l, int r, sortperf_t *s) { 
+// Quicksort com inserção para partições pequenas
+void quickSortIns(int *A, int l, int r, sortperf_t *s) {
+    inccalls(s, 1);
+    const int INSERTION_THRESHOLD = 16;
+    if (r - l + 1 <= INSERTION_THRESHOLD) {
+        insertionSort(A, l, r, s);
+    } else {
+        int i, j;
+        partition(A, l, r, s);
+        quickSortIns(A, l, j, s);
+        quickSortIns(A, j + 1, r, s);
+    }
 }
 
+
 // quicksort with insertion for small partitions and median of 3
-void quickSort3Ins(int * A, int l, int r, sortperf_t *s) { 
+void quickSort3Ins(int *A, int l, int r, sortperf_t *s) {
+    inccalls(s, 1);
+    const int INSERTION_THRESHOLD = 16;
+    if (r - l + 1 <= INSERTION_THRESHOLD) {
+        insertionSort(A, l, r, s);
+    } else {
+        int i, j;
+        partition3(A, l, r, &i, &j, s);
+        quickSort3Ins(A, l, j, s);
+        quickSort3Ins(A, j + 1, r, s);
+    }
 }
 
 void uso()
