@@ -6,7 +6,6 @@
  */
 
 class Heap{
-
     public:
         Heap(int maxsize);
         ~Heap();
@@ -23,7 +22,7 @@ class Heap{
         int GetSucessorDir(int posicao);
 
         int tamanho;
-        int* data;
+        Point* data;
 
         /* Funções necessárias para implementar o Heapify recursivo
          * Você pode apagar elas caso decida implementar o Heapify iterativo
