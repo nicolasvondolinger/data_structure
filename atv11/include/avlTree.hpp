@@ -5,11 +5,16 @@ using namespace std;
 
 class avlTree{
     public:
-        avlTree(/* args */);
+        avlTree(string word, int pag);
         ~avlTree();
-        int height(node* n);
-        int max(int v1, int v2);
-        int balanceFactor(node* n);
+        Node* getRoot();
+        int height(Node* n);
+        int maxValue(int v1, int v2);
+        int balanceFactor(Node* n);
+        bool contain(Node* n, string word);
+        Node* rightRotate(Node* x);
+        Node* leftRotate(Node* y);
+        Node* insert(Node* n,string w, int pag);
     private:
-
+        Node* root;
 };

@@ -4,15 +4,20 @@
 
 using namespace std;
 
-Node::Node(string word, int pag)[
+Node::Node(string w, int pag){
     parent = nullptr;
     right = nullptr;
     left = nullptr;
     height = 0;
     numpags = 1;
+    word = w;
     pags[0] = pag;
-]
+}
 
 Node::~Node(){
     
+}
+
+string Node::getWord(){
+    return word;
 }
