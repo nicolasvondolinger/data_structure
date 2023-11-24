@@ -6,9 +6,9 @@
 int main(int argc, char ** argv){
   string palavra;
   int pagina,pos;
-  dupla meuind;
+  avlTree avl;
 
-  inicializaindice(&meuind);
+  inicializaindice();
  
   while (!feof(stdin)){
     cin >> palavra >> pagina;
@@ -16,7 +16,7 @@ int main(int argc, char ** argv){
     inserepalavra(&meuind,pos,palavra,pagina);
   }	  
 
-  imprimeindice(&meuind);
+  imprimeindice();
 
   return 0;
 }

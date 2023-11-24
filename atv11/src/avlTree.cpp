@@ -4,9 +4,10 @@
 
 using namespace std;
 
-avlTree::avlTree(string word, int pag){
-    root = new Node(word, pag);
+avlTree::avlTree(){
+    root = nullptr;
 }
+
 
 avlTree::~avlTree(){
     
@@ -22,13 +23,13 @@ int avlTree::maxValue(int v1, int v2){
 }
 
 int avlTree::height(Node* n){
-    if(n == NULL) return -1;
+    if(n == NULL) return 0;
     return 1 + maxValue(height(n->left), height(n->right));
 }
 
 int avlTree::balanceFactor(Node* n){
     if(n == NULL) return 0;
-    int balance = n->right->height - n->left->height;
+    int balance = n->right->getHeight() - n->left->getHeight();
     return balance;
 }
 
@@ -47,8 +48,8 @@ Node* avlTree::rightRotate(Node* x){
     y->right = x;
     x->left = z;
 
-    x->height = max(height(x->left), height(x->right)) + 1;
-    y->height = max(height(y->left), height(y->right)) + 1;
+    x->setHeight(maxValue(x->left->getHeight(), x->right->getHeight()) + 1);
+    y->setHeight(maxValue(y->left->getHeight(), y->right->getHeight()) + 1);
 
     return x;
 }
@@ -60,8 +61,8 @@ Node* avlTree::leftRotate(Node* x){
     y->left = x;
     x->right = z;
 
-    x->height = max(height(x->left), height(x->right)) + 1;
-    y->height = max(height(y->left), height(y->right)) + 1;
+    x->setHeight(maxValue(x->left->getHeight(), x->right->getHeight()) + 1);
+    y->setHeight(maxValue(y->left->getHeight(), y->right->getHeight()) + 1);
 
     return y;
 }
@@ -72,29 +73,30 @@ Node* avlTree::insert(Node* n, string w, int pag){
         return toInsert;
     }
     if(n->getWord() > w) {
-        n->right = insert(n->right, w, pag);
+        n->left = insert(n->left, w, pag);
     }
     if(n->getWord() < w) {
-        n->left = insert(n->left, w, pag);
+        n->right = insert(n->right, w, pag);
     }
     else{
         n->pags[numpags] = pag;
         n->numpags++;
         return n;
     }
-    n -> height = 1 + maxValue(height(n -> left), height(n -> right));
+
+    n->height = 1 + maxValue(height(n -> left), height(n -> right));
 
     int balance = balanceFactor(n);
 
-    if(balance > 1 && w < n->left->getWord()) return rightRotate(n);
-    if(balance < -1 && w > n->right->getWord()) return leftRotate(n);
-    if(balance > 1 && w > n->left->getWord()){
-        n->left = leftRotate(n->left);
-        return rightRotate(n);
-    }
-    if(balance < -1 && w < n->right->getWord()){
+    if(balance < -1 && w < n->left->getWord()) return rightRotate(n);
+    if(balance > 1 && w > n->right->getWord()) return leftRotate(n);
+    if(balance > 1 && w < n->right->getWord()){
         n->right = rightRotate(n->right);
         return leftRotate(n);
+    }
+    if(balance < -1 && w > n->left->getWord()){
+        n->left = leftRotate(n->left);
+        return rightRotate(n);
     }
 
     return n;

@@ -21,3 +21,11 @@ Node::~Node(){
 string Node::getWord(){
     return word;
 }
+
+int Node::getHeight(){
+    return height;
+}
+
+void Node::setHeight(int n){
+    height = n;
+}

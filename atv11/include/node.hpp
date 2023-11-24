@@ -13,6 +13,8 @@ class Node {
     Node(string word, int pag);
     ~Node();
     string getWord();
+    int getHeight();
+    void setHeight(int n);
     Node* parent;
     Node* left;
     Node* right;
