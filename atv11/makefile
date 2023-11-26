@@ -5,8 +5,8 @@ OBJ = obj
 INC = include
 BIN = bin
 
-OBJS = $(OBJ)/Set.o $(OBJ)/main.o
-HDRS = $(INC)/Set.hpp 
+OBJS = $(OBJ)/node.o $(OBJ)/main.o
+HDRS = $(INC)/node.hpp 
 CFLAGS = -g -Wall -c -I$(INC)
 
 EXE = $(BIN)/pa11.out  # Nome do executável corrigido
