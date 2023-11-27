@@ -5,19 +5,33 @@ OBJ = obj
 INC = include
 BIN = bin
 
-OBJS = $(OBJ)/matrix.o $(OBJ)/main.o
-HDRS = $(INC)/matrix.hpp 
-CFLAGS = -g -Wall -c -I$(INC)
+OBJS = $(OBJ)/main.o $(OBJ)/matrix.o $(OBJ)/memlog.o
+HDRS = $(INC)/matrix.hpp $(INC)/memlog.hpp
+CFLAGS = -g -Wall -c -I$(INC) -pg
+LDFLAGS = -pg
 
-EXE = $(BIN)/tp3.out  # Nome do executável corrigido
+EXE = $(BIN)/tp2.out 
 
-all: $(EXE)
+all: mem perf gprof cachegrind
+
+mem: $(EXE)
+	valgrind --tool=memcheck --leak-check=full ./$(EXE)
+
+perf: $(EXE)
+	./$(EXE)
+
+gprof: $(EXE)
+	./$(EXE)
+	gprof $(EXE) gmon.out > /tmp/matrix.txt
+
+cachegrind: $(EXE)
+	valgrind --tool=cachegrind ./$(EXE)
 
 clean:
-	rm -f $(EXE) $(OBJS) gmon.out
+	rm -f $(EXE) $(OBJS) gmon.out cachegrind.out.*
 
 $(EXE): $(OBJS) | $(BIN)
-	$(CC) $(OBJS) -o $(EXE) $(LIBS)
+	$(CC) $(OBJS) -o $(EXE) $(LIBS) $(LDFLAGS)
 
 $(BIN):
 	mkdir -p $(BIN)
