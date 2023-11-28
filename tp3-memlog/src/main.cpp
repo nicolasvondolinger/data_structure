@@ -30,6 +30,13 @@ matrix mult(matrix a, matrix b) {
     return result;
 }
 
+// Recursive function to build the segment tree
+matrix build(int p, int l, int r) {
+    if (l == r) return segTree[p] = leaf[l];
+    int m = (l + r) / 2;
+    return segTree[p] = mult(build(2 * p, l, m), build(2 * p + 1, m + 1, r));
+}
+
 // Recursive function to query the segment tree
 matrix query(int a, int b, int p, int l, int r) {
     if (b < l || r < a) return def;

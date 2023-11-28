@@ -10,7 +10,7 @@ HDRS = $(INC)/matrix.hpp $(INC)/memlog.hpp
 CFLAGS = -g -Wall -c -I$(INC) -pg
 LDFLAGS = -pg
 
-EXE = $(BIN)/tp2.out 
+EXE = $(BIN)/tp3.out 
 
 all: mem perf gprof cachegrind
 
