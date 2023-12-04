@@ -8,8 +8,9 @@ BIN = bin
 OBJS = $(OBJ)/matrix.o $(OBJ)/main.o
 HDRS = $(INC)/matrix.hpp 
 CFLAGS = -g -Wall -c -I$(INC)
+VALGRIND_FLAGS = --leak-check=full --show-leak-kinds=all
 
-EXE = $(BIN)/tp3.out  # Nome do executável corrigido
+EXE = $(BIN)/tp3.out
 
 all: $(EXE)
 
@@ -27,3 +28,9 @@ $(OBJ)/%.o: $(SRC)/%.cpp $(HDRS) | $(OBJ)
 
 $(OBJ):
 	mkdir -p $(OBJ)
+
+valgrind: $(EXE)
+	valgrind $(VALGRIND_FLAGS) ./$(EXE)
+
+cachegrind: $(EXE)
+	valgrind --tool=cachegrind ./$(EXE)

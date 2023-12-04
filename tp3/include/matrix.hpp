@@ -1,8 +1,7 @@
-class matrix{
+class matrix {
 private:
-    
+    // Private members, if any
+
 public:
-    int begin;
-    int end;
-    long int m[2][2] = {{1, 0}, {0, 1}};
+    long int m[2][2] = {{1, 0}, {0, 1}};  // 2x2 matrix with default values
 };
