@@ -21,12 +21,12 @@
 #define ALGHEAPSORT  7
 #define ALGRECSEL    8
 
-typedef struct alg{
+typedef struct alg {
   int num;
-  char * name;
+  char *name;
 } alg_t;
 
-alg_t algvet[]={
+alg_t algvet[] = {
   {ALGINSERTION,"i"},
   {ALGSELECTION,"s"},
   {ALGQSORT,"q"},
@@ -38,300 +38,342 @@ alg_t algvet[]={
   {0,0}
 };
 
-int name2num(char * name){
-  int i=0;
-  while (algvet[i].num){
-    if (!strcmp(algvet[i].name,name)) return algvet[i].num;
+int name2num(char *name) {
+  int i = 0;
+  while (algvet[i].num) {
+    if (!strcmp(algvet[i].name, name)) return algvet[i].num;
     i++;
   }
   return 0;
 }
 
-char * num2name(int num){
-  int i=0;
-  while (algvet[i].num){
-    if (algvet[i].num==num) return algvet[i].name;
+char *num2name(int num) {
+  int i = 0;
+  while (algvet[i].num) {
+    if (algvet[i].num == num) return algvet[i].name;
     i++;
   }
   return 0;
 }
 
-typedef struct opt{
+typedef struct opt {
   int size;
   int seed;
   int alg;
 } opt_t;
 
-typedef struct sortperf{
+typedef struct sortperf {
   long int cmp;
   long int move;
   long int calls;
 } sortperf_t;
 
-void resetcounter(sortperf_t * s){
-// Descricao: inicializa estrutura
-// Entrada: 
-// Saida: s
+void resetcounter(sortperf_t *s) {
+  // Descricao: inicializa estrutura
+  // Entrada: 
+  // Saida: s
   s->cmp = 0;
   s->move = 0;
   s->calls = 0;
 }
 
-void inccmp(sortperf_t * s, int num){
-// Descricao: incrementa o numero de comparacoes em num 
-// Entrada: s, num
-// Saida: s
+void inccmp(sortperf_t *s, int num) {
+  // Descricao: incrementa o numero de comparacoes em num 
+  // Entrada: s, num
+  // Saida: s
   s->cmp += num;
 }
 
-void incmove(sortperf_t * s, int num){
-// Descricao: incrementa o numero de movimentacoes de dados em num 
-// Entrada: s, num
-// Saida: s
+void incmove(sortperf_t *s, int num) {
+  // Descricao: incrementa o numero de movimentacoes de dados em num 
+  // Entrada: s, num
+  // Saida: s
   s->move += num;
 }
 
-void inccalls(sortperf_t * s, int num){
-// Descricao: incrementa o numero de chamadas de função em num 
-// Entrada: s, num
-// Saida: s
+void inccalls(sortperf_t *s, int num) {
+  // Descricao: incrementa o numero de chamadas de função em num 
+  // Entrada: s, num
+  // Saida: s
   s->calls += num;
 }
 
-char * printsortperf(sortperf_t * s, char * str, char * pref){
-// Descricao: gera string com valores de sortperf 
-// Entrada: s, pref
-// Saida: str
-
- sprintf(str,"%s cmp %ld move %ld calls %ld", pref, s->cmp, s->move, s->calls); 
- return str;
+char *printsortperf(sortperf_t *s, char *str, char *pref) {
+  // Descricao: gera string com valores de sortperf 
+  // Entrada: s, pref
+  // Saida: strx
+  sprintf(str, "%s cmp %ld move %ld calls %ld", pref, s->cmp, s->move, s->calls);
+  return str;
 }
 
-
-void initVector(int * vet, int size){
-// Descricao: inicializa vet com valores aleatorios
-// Entrada: vet
-// Saida: vet
+void initVector(int *vet, int size) {
+  // Descricao: inicializa vet com valores aleatorios
+  // Entrada: vet
+  // Saida: vet
   int i;
   // inicializa a parte alocada da vetor com valores aleatorios
-  for (i=0; i<size; i++){
-    vet[i] = (int)(drand48()*size);
+  for (i = 0; i < size; i++) {
+    vet[i] = (int)(drand48() * size);
   }
 }
 
-void printVector(int * vet, int size){
-// Descricao: inicializa vet com valores aleatorios
-// Entrada: vet
-// Saida: vet
+void printVector(int *vet, int size) {
+  // Descricao: inicializa vet com valores aleatorios
+  // Entrada: vet
+  // Saida: vet
   int i;
-  for (i=0; i<size; i++){
-    printf("%d ",vet[i]);
+  for (i = 0; i < size; i++) {
+    printf("%d ", vet[i]);
   }
   printf("\n");
 }
 
-void swap(int *xp, int *yp, sortperf_t *s){
-    int temp = *xp;
-    *xp = *yp;
-    *yp = temp;
-    incmove(s,3);
+void swap(int *xp, int *yp, sortperf_t *s) {
+  int aux = *xp;
+  *xp = *yp;
+  *yp = aux;
+  incmove(s, 3);
 }
 
-// heapsort
-void heapify(int * A, int l, int r, sortperf_t *s){
-    inccalls(s, 1);
-    int i, j, aux;
-    i = l;
-    j = i * 2;
-    incmove(s, 1);
-    aux = A[i];
-    while(j <= r){
-      if(j < r){
-        inccmp(s, 1);
-        if(A[j] < A[j + 1]) j++;
-      }
+/// Heapsort
+void heapify(int *A, int l, int r, sortperf_t *s) {
+  inccalls(s, 1);
+  int i, j, aux;
+  i = l;
+  j = i * 2;
+  incmove(s, 1);
+  aux = A[i];
+  while (j <= r) {
+    if (j < r) {
       inccmp(s, 1);
-      if(aux >= A[j]) break;
-      incmove(s, 1);
-      A[i] = A[j];
-      i = j;
-      j = i * 2;
+      if (A[j] < A[j + 1]) {
+        j++;
+      }
+    }
+    inccmp(s, 1);
+    if (aux >= A[j]) {
+      break;
     }
     incmove(s, 1);
-    A[i] = aux;
+    A[i] = A[j];
+    i = j;
+    j = i * 2;
+  }
+  incmove(s, 1);
+  A[i] = aux;
 }
 
-void buildheap(int *A, int n, sortperf_t * s) {
+void buildheap(int *A, int n, sortperf_t *s) {
   inccalls(s, 1);
-  int left = n / 2 + 1;
-  while(left > 1){
-    left--;
-    heapify(A, left, n, s);
+  int esq = n / 2 + 1;
+  while (esq > 1) {
+    esq--;
+    heapify(A, esq, n, s);
   }
 }
 
-void heapSort(int *A, int n, sortperf_t * s) {
-  int left, right, aux;
+void heapSort(int *A, int n, sortperf_t *s) {
+  int esq, dir, aux;
   inccalls(s, 1);
   buildheap(A, n, s);
-  left = 1;
-  right = n;
-  while(right > 1){
-    aux = A[1];
-    A[1] = A[right];
-    A[right] = aux;
+  esq = 1;
+  dir = n;
+  while (dir > 1) {
     incmove(s, 3);
-    right--;
-    heapify(A, left, right, s);
+    aux = A[1];
+    A[1] = A[dir];
+    A[dir] = aux;
+    dir--;
+    heapify(A, esq, dir, s);
   }
 }
 
-
-// recursive selection sort
-void recursiveSelectionSort(int arr[], int l, int r, sortperf_t * s){
-    int min = l;
-    inccalls(s,1);
-    for (int j = l + 1; j <= r; j++){
-	    inccmp(s,1);
-      if (arr[j] < arr[min]) min = j;  
-    }
-    if (min!=l) swap(&arr[min], &arr[l], s);
-    if (l + 1 < r) recursiveSelectionSort(arr, l + 1, r, s);
-}
-
-// selection sort
-void selectionSort(int arr[], int l, int r, sortperf_t * s) { 
-  int i, j, min;
-    inccalls(s,1);
-    for (i = l; i < r; i++){
-	    min = i;
-      for(j = i+1; j <= r; j++){
-        inccmp(s, 1);
-        if (arr[j] < arr[min]) min = j;
-      }
-      if (min!=i) swap(&arr[i], &arr[min], s);
-    }
-    return;
-}
-
-//insertion sort
-void insertionSort(int v[], int l, int r, sortperf_t * s) {
+// Selection Sort Recursivo
+void recursiveSelectionSort(int arr[], int l, int r, sortperf_t *s) {
+  // Encontrar o elemento mínimo na subarray não ordenada [i…n-1]
+  // e trocar com arr[i]
+  int min = l;
   inccalls(s, 1);
-  for(int i = l+1; i < r; i++){
-    int temp = v[i];
+  for (int j = l + 1; j <= r; j++) {
+    // Se arr[j] for menor, então é o novo mínimo
+    inccmp(s, 1);
+    if (arr[j] < arr[min]) {
+      min = j; // Atualizar o índice do elemento mínimo
+    }
+  }
+
+  // Trocar o elemento mínimo na subarray arr[i…n-1] com arr[i]
+  if (min != l)
+    swap(&arr[min], &arr[l], s);
+
+  if (l + 1 < r) {
+    recursiveSelectionSort(arr, l + 1, r, s);
+  }
+}
+
+// Selection Sort
+void selectionSort(int arr[], int l, int r, sortperf_t *s) {
+  inccalls(s, 1);
+  int i, j, min;
+  for (i = l; i < r; i++) {
+    min = i;
+    for (j = i + 1; j <= r; j++) {
+      inccmp(s, 1);
+      if (arr[j] < arr[min]) {
+        min = j;
+      }
+    }
+    if (min != i) {
+      swap(&arr[i], &arr[min], s);
+    }
+  }
+  return;
+}
+
+// Insertion Sort
+void insertionSort(int v[], int l, int r, sortperf_t *s) {
+  inccalls(s, 1);
+  for (int i = l + 1; i < r; i++) {
+    int aux = v[i];
     int j = i - 1;
     inccmp(s, 1);
-    while(j >= 0 && temp < v[j]){
+    while (j >= 0 && aux < v[j]) {
       inccmp(s, 1);
       incmove(s, 1);
       v[j + 1] = v[j];
       j--;
     }
     incmove(s, 2);
-    v[j + 1] = temp;
+    v[j + 1] = aux;
   }
 }
 
-// median of 3 integers
-int median (int a, int b, int c) {
-    if ((a <= b) && (b <= c)) return b;  // a b c
-    if ((a <= c) && (c <= b)) return c;  // a c b
-    if ((b <= a) && (a <= c)) return a;  // b a c
-    if ((b <= c) && (c <= a)) return c;  // b c a
-    if ((c <= a) && (a <= b)) return a;  // c a b
-    return b;                            // c b a
+// Mediana de 3 inteiros
+int median(int a, int b, int c) {
+  if ((a <= b) && (b <= c)) return b; // a b c
+  if ((a <= c) && (c <= b)) return c; // a c b
+  if ((b <= a) && (a <= c)) return a; // b a c
+  if ((b <= c) && (c <= a)) return c; // b c a
+  if ((c <= a) && (a <= b)) return a; // c a b
+  return b;                           // c b a
 }
 
-// quicksort partition using median of 3
-void partition3(int * A, int l, int r, int *i, int *j, sortperf_t *s) {
+// Quicksort usando mediana de 3
+void partition3(int *A, int l, int r, int *i, int *j, sortperf_t *s) {
   inccalls(s, 1);
-  int pivot, temp;
+  int pivot, aux;
   *i = l;
   *j = r;
   pivot = median(A[l], A[(*i + *j) / 2], A[r]);
-  while((*i) <= (*j)){
+  while ((*i) <= (*j)) {
     inccmp(s, 1);
-    while(pivot > A[*i]){
+    while (pivot > A[*i]) {
+      inccmp(s, 1);
       (*i)++;
-      inccmp(s, 1);
     }
     inccmp(s, 1);
-    while(pivot < A[*j]){
+    while (pivot < A[*j]) {
+      inccmp(s, 1);
       (*j)--;
-      inccmp(s, 1);
     }
-    if(*i <= *j){
-      swap(&A[*i], &A[*j], s);
-      (*i)++; (*j)--;
+    if (*i <= *j) {
+      incmove(s, 3);
+      aux = A[*i];
+      A[*i] = A[*j];
+      A[*j] = aux;
+      (*i)++;
+      (*j)--;
     }
   }
 }
 
-// standard quicksort partition
-void partition(int * A, int l, int r, int *i, int *j, sortperf_t *s) {
+// Partição padrão do Quicksort
+void partition(int *A, int l, int r, int *i, int *j, sortperf_t *s) {
   inccalls(s, 1);
-  int pivot, temp; *i = l; *j = r;
+  int pivot, aux;
+  *i = l;
+  *j = r;
   pivot = A[(*i + *j) / 2];
-  while((*i) <= (*j)){
+  while ((*i) <= (*j)) {
     inccmp(s, 1);
-    while(pivot > A[*i]){
-      (*i)++; inccmp(s, 1);
+    while (pivot > A[*i]) {
+      inccmp(s, 1);
+      (*i)++;
     }
     inccmp(s, 1);
-    while(pivot < A[*j]){
-      (*j)--; inccmp(s, 1);
+    while (pivot < A[*j]) {
+      inccmp(s, 1);
+      (*j)--;
     }
-    if(*i <= *j){
-      swap(&A[*i], &A[*j], s);
-      (*i)++; (*j)--;
+    if (*i <= *j) {
+      incmove(s, 3);
+      aux = A[*i];
+      A[*i] = A[*j];
+      A[*j] = aux;
+      (*i)++;
+      (*j)--;
     }
   }
 }
 
-// standard quicksort
-void quickSort(int * A, int l, int r, sortperf_t *s) { 
+// Quicksort padrão
+void quickSort(int *A, int l, int r, sortperf_t *s) {
   inccalls(s, 1);
   int i, j;
   partition(A, l, r, &i, &j, s);
-  if(l < j) quickSort(A, l, j, s);
-  if(i < r) quickSort(A, i, r, s);
+  if (l < j) {
+    quickSort(A, l, j, s);
+  }
+  if (i < r) {
+    quickSort(A, i, r, s);
+  }
 }
 
-// quicksort with median of 3
-void quickSort3(int * A, int l, int r, sortperf_t *s) { 
+// Quicksort com mediana de 3
+void quickSort3(int *A, int l, int r, sortperf_t *s) {
   inccalls(s, 1);
   int i, j;
   partition3(A, l, r, &i, &j, s);
-  if(l < j) quickSort3(A, l, j, s);
-  if(i < r) quickSort3(A, i, r, s);
+  if (l < j) {
+    quickSort3(A, l, j, s);
+  }
+  if (i < r) {
+    quickSort3(A, i, r, s);
+  }
 }
 
-// quicksort with insertion for small partitions
-// Quicksort com inserção para partições pequenas
 void quickSortIns(int *A, int l, int r, sortperf_t *s) {
-    int i, j; int limit = 50; int length = r - l;
-    if (length <= limit) {
-        insertionSort(A, l, r+1, s);
-    } else {
-        partition(A, l, r, &i, &j, s);
-        inccalls(s, 1);
-        if(l < j) quickSortIns(A, l, j, s);
-        if(r > i) quickSortIns(A, i, r, s);
+  int i, j;
+  int tamanho = r - l;
+  if (tamanho <= 50) {
+    insertionSort(A, l, r + 1, s);
+  } else {
+    partition(A, l, r, &i, &j, s);
+    inccalls(s, 1);
+    if (l < j) {
+      quickSortIns(A, l, j, s);
     }
+    if (r > i) {
+      quickSortIns(A, i, r, s);
+    }
+  }
 }
 
-
-// quicksort with insertion for small partitions and median of 3
 void quickSort3Ins(int *A, int l, int r, sortperf_t *s) {
-    int i, j; int limit = 50; int length = r - l;
-    if (length <= limit) {
-        insertionSort(A, l, r+1, s);
-    } else {
-        partition3(A, l, r, &i, &j, s);
-        inccalls(s, 1);
-        if(l < j) quickSort3Ins(A, l, j, s);
-        if(r > i) quickSort3Ins(A, i, r, s);
+  int i, j;
+  int tamanho = r - l;
+  if (tamanho <= 50) {
+    insertionSort(A, l, r + 1, s);
+  } else {
+    partition3(A, l, r, &i, &j, s);
+    inccalls(s, 1);
+    if (l < j) {
+      quickSort3Ins(A, l, j, s);
     }
+    if (r > i) {
+      quickSort3Ins(A, i, r, s);
+    }
+  }
 }
 
 void uso()
@@ -453,10 +495,10 @@ int main (int argc, char ** argv){
          quickSort3(vet, 0, opt.size-1, &s);
          break;
     case ALGQSORTINS:
-         quickSortIns(vet, 0, opt.size-1, &s);
+         quickSortIns(vet, 0, opt.size - 1, &s);
          break;
     case ALGQSORT3INS:
-         quickSort3Ins(vet, 0, opt.size-1, &s);
+         quickSort3Ins(vet, 0, opt.size - 1, &s);
          break;
     case ALGHEAPSORT:
          heapSort(vet, opt.size, &s);
@@ -480,4 +522,3 @@ int main (int argc, char ** argv){
 
   exit(0);
 }
-
